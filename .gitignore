@@ -1,0 +1,36 @@
+# Binaries and object files
+*.exe
+*.o
+*.obj
+*.dll
+*.so
+*.dylib
+*.pdb
+
+# Build output directories
+build/
+.cache/
+compile_commands.json
+
+# IDE settings
+.vscode/
+.idea/
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Python cache
+__pycache__/
+*.py[cod]
+backend/__pycache__/
+
+# Runtime output logs and metrics
+firewall_audit.log
+firewall_decisions.csv
+firewall_stats.dat
+simulation_metrics.csv
+cwnd_trace.csv
+state/engine_stats.conf
+create_30_commits.py
