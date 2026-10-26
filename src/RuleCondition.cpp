@@ -2,6 +2,8 @@
 #include <iostream>
 #include <stdexcept>
 
+using namespace std;
+
 uint32_t IPCondition::calculateMask(uint32_t pfx) {
     if (pfx > 32) {
         throw std::invalid_argument("CIDR prefix must be between 0 and 32, got: " + std::to_string(pfx));

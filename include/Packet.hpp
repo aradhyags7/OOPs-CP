@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <string>
 
+using namespace std;
+
 enum class Protocol {
     TCP,
     UDP,
@@ -38,12 +40,12 @@ struct Packet {
         }
     }
 
-    static uint32_t parseIPv4(const std::string& ipStr);
-    static std::string ipToString(uint32_t ip);
+    static uint32_t parseIPv4(const string& ipStr);
+    static string ipToString(uint32_t ip);
 
-    std::string getProtocolString() const;
-    std::string getDirectionString() const;
-    std::string toString() const;
+    string getProtocolString() const;
+    string getDirectionString() const;
+    string toString() const;
 };
 
 #endif // PACKET_HPP

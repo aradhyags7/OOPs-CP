@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <vector>
 
+using namespace std;
+
 uint32_t Packet::parseIPv4(const std::string& ipStr) {
     std::stringstream ss(ipStr);
     std::string segment;
