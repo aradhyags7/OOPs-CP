@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firewall Rule Engine - Research Gap & Engineering Methodology</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@page {
+    size: A4 portrait;
+    margin: 18mm 16mm 18mm 16mm;
+    @bottom-center {
+        content: counter(page);
+        font-family: 'Inter', sans-serif;
+        font-size: 8.5pt;
+        color: #64748b;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 9.8pt;
+    line-height: 1.62;
+    color: #1e293b;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Document Header / Cover Banner */
+.doc-header {
+    border-bottom: 3px solid #1e3a8a;
+    background: linear-gradient(to right, #f8fafc, #ffffff);
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 28px;
+}
+
+.doc-badge {
+    display: inline-block;
+    background-color: #1e3a8a;
+    color: #ffffff;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.doc-header h1 {
+    font-size: 19pt;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    line-height: 1.25;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.doc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 8.5pt;
+    color: #475569;
+    margin-top: 12px;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 10px;
+}
+
+.doc-meta-item strong {
+    color: #0f172a;
+}
+
+/* Headings */
+h1 {
+    font-size: 14.5pt;
+    font-weight: 700;
+    color: #1e3a8a;
+    border-bottom: 1.5px solid #cbd5e1;
+    padding-bottom: 6px;
+    margin-top: 30px;
+    margin-bottom: 14px;
+    page-break-after: avoid;
+}
+
+.doc-header h1 {
+    page-break-after: auto;
+}
+
+h2 {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #1e40af;
+    margin-top: 22px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #334155;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+}
+
+h4, h5, h6 {
+    font-size: 9.8pt;
+    font-weight: 600;
+    color: #475569;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+}
+
+p {
+    margin: 0 0 10px 0;
+    text-align: justify;
+}
+
+ul, ol {
+    margin: 0 0 12px 0;
+    padding-left: 22px;
+}
+
+li {
+    margin-bottom: 4px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 22px 0;
+}
+
+/* Links */
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 20px 0;
+    font-size: 8.5pt;
+    line-height: 1.45;
+    page-break-inside: avoid;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+th, td {
+    padding: 7px 10px;
+    border: 1px solid #cbd5e1;
+    vertical-align: top;
+}
+
+th {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    letter-spacing: 0.2px;
+}
+
+tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+/* Code & Preformatted */
+code {
+    font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 8.5pt;
+    background-color: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+pre {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #1e3a8a;
+    border-radius: 4px;
+    padding: 11px 13px;
+    overflow-x: auto;
+    margin: 14px 0;
+    page-break-inside: avoid;
+}
+
+pre code {
+    font-size: 8pt;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    color: #0f172a;
+    line-height: 1.5;
+}
+
+/* Blockquotes / Callout Alerts */
+blockquote {
+    border-left: 4px solid #3b82f6;
+    background-color: #eff6ff;
+    color: #1e40af;
+    margin: 14px 0;
+    padding: 10px 16px;
+    border-radius: 0 6px 6px 0;
+    font-size: 9pt;
+    page-break-inside: avoid;
+}
+
+blockquote p {
+    margin: 0;
+    color: #1e3a8a;
+}
+
+/* Mermaid Diagrams Container */
+.mermaid-wrapper {
+    margin: 22px 0;
+    text-align: center;
+    page-break-inside: avoid;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.mermaid-wrapper svg {
+    max-width: 100% !important;
+    height: auto !important;
+    display: inline-block;
+}
+
+.mermaid-caption {
+    font-size: 8pt;
+    color: #64748b;
+    font-style: italic;
+    margin-top: 10px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 6px;
+}
+
+/* Print Utilities */
+@media print {
+    body {
+        font-size: 9.5pt;
+    }
+    .page-break {
+        page-break-before: always;
+    }
+    .no-break {
+        page-break-inside: avoid;
+    }
+}
+
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */
+</style>
+<script>
+window.addEventListener('DOMContentLoaded', async () => {
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: 'neutral',
+        securityLevel: 'loose',
+        fontFamily: 'Inter, -apple-system, Segoe UI, sans-serif'
+    });
+    try {
+        await mermaid.run({
+            querySelector: '.mermaid'
+        });
+    } catch (e) {
+        console.error('Mermaid render error:', e);
+    }
+    const flag = document.createElement('div');
+    flag.id = 'render-complete';
+    flag.style.display = 'none';
+    document.body.appendChild(flag);
+});
+</script>
+</head>
+<body>
+<h1 id="firewall-rule-engine-research-gap-methodology-and-architectural-solutions">Firewall Rule Engine: Research Gap, Methodology, and Architectural Solutions</h1>
+<p><strong>Course:</strong> Second-Year Object-Oriented Programming in C++ (CS201 / CE201)<br />
+<strong>Project:</strong> Firewall Rule Engine in Modern C++17<br />
+<strong>Artifact Classification:</strong> Technical Methodology &amp; Educational Gap Analysis<br />
+<strong>Repository Location:</strong> <code>Research_Gap_and_Methodology.md</code>  </p>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary</h2>
+<p>This document presents a focused, academic analysis of the <strong>educational, engineering, and research motivations</strong> underlying the <strong>Firewall Rule Engine</strong> project. It delineates why conventional educational networking codebases fail to teach extensible software engineering, contrasts academic packet-filtering research with user-space pedagogical simulators, and systematically defines the 11-phase development methodology utilized to build and verify the system.</p>
+<hr />
+<h2 id="2-problem-domain-and-context">2. Problem Domain and Context</h2>
+<p>Network firewalls form the primary perimeter defense in modern telecommunication networks, inspecting incoming and outgoing packet headers against structured access control lists (ACLs) to enforce security policies.</p>
+<p>In high-performance production systems (such as Linux Netfilter/<code>nftables</code>, OpenBSD <code>pf</code>, and Cisco ASA), rule evaluation is tightly coupled with kernel networking subsystems, raw device drivers, and hardware acceleration tables (TCAMs). While these production tools provide line-rate throughput, their internal implementations are inaccessible, opaque, and overly complex for undergraduate engineering students studying object-oriented design patterns, polymorphic software architecture, and deterministic policy evaluation.</p>
+<p>Conversely, introductory academic assignments and textbook examples often oversimplify firewall logic into monolithic, hardcoded procedural functions (e.g., deeply nested <code>if-else</code> or <code>switch</code> statements). Such implementations obscure the fundamental abstractions of packet filtering—namely polymorphic predicates, composite rules, deterministic priority resolution, non-terminal auditing taps, and transactional configuration management.</p>
+<hr />
+<h2 id="3-tripartite-gap-analysis">3. Tripartite Gap Analysis</h2>
+<p>To maintain scientific integrity and rigorous academic framing, this project differentiates between <strong>theoretical research gaps</strong>, <strong>practical engineering limitations</strong>, and <strong>educational design gaps</strong>.</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">+-------------------------------------------------------------------------------+</span>
+<span class="c">|                             TRIPARTITE GAP MODEL                              |</span>
+<span class="nb">+-------------------------------------------------------------------------------+</span>
+<span class="c">|  1</span><span class="nt">.</span><span class="c"> Published Literature Research Gaps                                        |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> Hardware TCAM power/capacity constraints                                |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> Multi</span><span class="nb">-</span><span class="c">dimensional packet classification at multi</span><span class="nb">-</span><span class="c">gigabit line rate     |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> JIT</span><span class="nb">-</span><span class="c">compiled eBPF bytecode optimization in kernel space                 |</span>
+<span class="nb">+-------------------------------------------------------------------------------+</span>
+<span class="c">|  2</span><span class="nt">.</span><span class="c"> Practical Engineering Limitations                                         |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> Elevated OS administrative privileges (CAP_NET_ADMIN / raw sockets)     |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> Kernel module compilation hazards and system instability risks          |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> Opaque decision logging in production tools (e</span><span class="nt">.</span><span class="c">g</span><span class="nt">.,</span><span class="c"> silent drops)        |</span>
+<span class="nb">+-------------------------------------------------------------------------------+</span>
+<span class="c">|  3</span><span class="nt">.</span><span class="c"> Educational &amp; Pedagogical Design Gaps (Primary Focus of this Project)     |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> Hardcoded conditional statements instead of polymorphic rule structures |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> Lack of runtime</span><span class="nb">-</span><span class="c">configurable rule policies and priority resolution      |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> Absence of step</span><span class="nb">-</span><span class="c">by</span><span class="nb">-</span><span class="c">step evaluation traces for packet viva verification  |</span>
+<span class="c">|     </span><span class="nb">-</span><span class="c"> Missing atomic configuration persistence and audit logging integration  |</span>
+<span class="nb">+-------------------------------------------------------------------------------+</span>
+</code></pre></div>
+
+<h3 id="31-research-gaps-in-published-literature">3.1 Research Gaps in Published Literature</h3>
+<p>In contemporary academic computer science literature (e.g., IEEE/ACM Transactions on Networking, ACM SIGCOMM), research in packet classification focuses on:
+- High-dimensional geometric cutting algorithms (e.g., HiCuts, HyperCuts, EffiCuts) to overcome memory explosion when scaling to hundreds of thousands of rules.
+- Hardware-assisted Ternary Content-Addressable Memory (TCAM) updates with bounded power dissipation and line-rate multi-terabit lookups.
+- Dynamic kernel bytecode compilation (e.g., extended Berkeley Packet Filter / eBPF and XDP) to bypass the OS network stack entirely.</p>
+<p><em>Clarification:</em> This undergraduate project does not claim to solve line-rate multi-gigabit hardware classification or provide novel geometric search algorithms for hundred-thousand-rule tables.</p>
+<h3 id="32-practical-engineering-limitations">3.2 Practical Engineering Limitations</h3>
+<p>Deploying actual kernel-level firewall modules (such as custom Linux Netfilter kernel extensions or Windows Filtering Platform drivers) introduces substantial engineering impediments in an academic evaluation context:
+- Requires root/administrator operating system privileges.
+- Involves kernel-space debugging where null-pointer dereferences cause operating system crashes (kernel panics or BSODs).
+- Masks rule-matching reasoning; production tools prioritize sub-microsecond throughput over human-readable diagnostic traces.</p>
+<h3 id="33-educational-and-pedagogical-design-gaps-project-focus">3.3 Educational and Pedagogical Design Gaps (Project Focus)</h3>
+<p>Undergraduate computer engineering curricula frequently present students with a false dichotomy: either manipulate complex, platform-specific production utilities through opaque shell scripts (<code>iptables -A INPUT ...</code>), or write trivial procedural programs containing hardcoded IP checks:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// Typical flawed introductory educational code:</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">packet</span><span class="p">.</span><span class="n">port</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">80</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">packet</span><span class="p">.</span><span class="n">ip</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"192.168.1.1"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">drop_packet</span><span class="p">();</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">packet</span><span class="p">.</span><span class="n">protocol</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"TCP"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">allow_packet</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This pedagogical approach suffers from six critical deficiencies:
+1. <strong>Monolithic Inflexibility:</strong> Adding a new filtering dimension (e.g., direction, port ranges, subnet masks) requires modifying core evaluation functions, directly violating the <strong>Open/Closed Principle (OCP)</strong>.
+2. <strong>Ambiguous Conflict Resolution:</strong> Hardcoded branches lack formal rule priorities. The order of <code>if-else</code> execution implicitly dictates security policy without deterministic priority semantics.
+3. <strong>Absence of Non-Terminal Auditing:</strong> Procedural code struggles to represent non-terminal actions (such as logging an alert without terminating rule evaluation) cleanly alongside terminal actions (<code>ALLOW</code>, <code>BLOCK</code>).
+4. <strong>Opaque Decision Logic:</strong> Introductory programs report only a binary "Allow" or "Block" verdict, providing zero visibility into which rule matched, which specific condition passed, or why a fallback policy triggered.
+5. <strong>No Configuration Lifecycle:</strong> Policies are hardcoded at compile-time rather than deserialized at runtime from structured configuration files with syntax validation and atomic rollback.
+6. <strong>Inadequate Testing of Boundary Scenarios:</strong> Introductory projects rarely validate CIDR bitwise prefix masking (especially <code>/0</code> wildcard and <code>/32</code> host routes) or overlapping priority conflicts.</p>
+<hr />
+<h2 id="4-gap-to-solution-mapping-table">4. Gap-to-Solution Mapping Table</h2>
+<p>The following table explicitly correlates each identified educational need with the concrete architectural component implemented in the C++17 codebase:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Identified Gap or Need</th>
+<th style="text-align: left;">Proposed Design Solution</th>
+<th style="text-align: left;">Concrete Implementation Component</th>
+<th style="text-align: left;">Expected Benefit</th>
+<th style="text-align: left;">Verification Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Hardcoded Filtering Logic</strong></td>
+<td style="text-align: left;">Polymorphic condition hierarchy adhering to Open/Closed Principle.</td>
+<td style="text-align: left;"><code>RuleCondition</code> base class; <code>IPCondition</code>, <code>PortCondition</code>, <code>ProtocolCondition</code>, <code>DirectionCondition</code>.</td>
+<td style="text-align: left;">New filtering criteria can be added without modifying the engine or existing rules.</td>
+<td style="text-align: left;"><code>TC-IP-01</code>, <code>TC-PORT-01</code>, <code>TC-PROTO-01</code>, <code>TC-DIR-01</code> unit tests; dynamic predicate composition.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Inflexible Policy Definitions</strong></td>
+<td style="text-align: left;">Runtime-configurable composite rule objects owning conditions via smart pointers.</td>
+<td style="text-align: left;"><code>FirewallRule</code> class utilizing <code>std::vector&lt;std::unique_ptr&lt;RuleCondition&gt;&gt;</code>.</td>
+<td style="text-align: left;">Rules can combine arbitrary filtering criteria dynamically at runtime.</td>
+<td style="text-align: left;">Rule creation via CLI; programmatic rule assembly in <code>SimulationRunner</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Ambiguous Rule Conflicts</strong></td>
+<td style="text-align: left;">Deterministic numerical priority sorting ($1 &lt; 2 &lt; \dots &lt; N$).</td>
+<td style="text-align: left;"><code>RuleManager::sortRules()</code> executing <code>std::stable_sort</code> on rule priority.</td>
+<td style="text-align: left;">Eliminates evaluation ambiguity when rules overlap; guarantees predictable enforcement.</td>
+<td style="text-align: left;"><code>TC-PRIO-01</code> (Priority Inversion Test: Rule 10 Block beats Rule 20 Allow).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Unexplained Decisions</strong></td>
+<td style="text-align: left;">Detailed evaluation traces and decoupled audit sinks for both terminal and non-terminal events.</td>
+<td style="text-align: left;"><code>FirewallEngine::evaluatePacket()</code>, <code>AuditLogger</code>, <code>firewall_audit.log</code>, and CSV exports.</td>
+<td style="text-align: left;">Faculty and students can inspect the exact rule ID, condition trace, and rationale for every decision.</td>
+<td style="text-align: left;"><code>TC-LOG-01</code> verification; Scenario E non-terminal tap execution; inspection of generated log files.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Missing Rule Persistence</strong></td>
+<td style="text-align: left;">File-based serialization and deserialization with transactional rollback on malformed syntax.</td>
+<td style="text-align: left;"><code>ConfigurationManager</code> (<code>rules/sample_rules.conf</code>).</td>
+<td style="text-align: left;">Persists security configurations across engine restarts without risking corrupted in-memory state.</td>
+<td style="text-align: left;"><code>TC-FILE-01</code> (malformed syntax rollback) and <code>TC-FILE-02</code> (round-trip save/load).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Opaque CIDR Bitmasking</strong></td>
+<td style="text-align: left;">32-bit big-endian integer arithmetic for IPv4 representation and netmask prefix matching.</td>
+<td style="text-align: left;"><code>Packet::ipToUint32()</code>, <code>IPCondition::matches()</code>.</td>
+<td style="text-align: left;">Eliminates slow string parsing in inner loops; accurately implements standard RFC 4632 subnet matching.</td>
+<td style="text-align: left;"><code>TC-CIDR-01</code> (/24 subnet matching), <code>TC-CIDR-02</code> (/32 exact host), <code>TC-CIDR-03</code> (/0 wildcard).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Missing Default Policy</strong></td>
+<td style="text-align: left;">Configurable fallback action guaranteeing complete decision coverage for all possible inputs.</td>
+<td style="text-align: left;"><code>FirewallEngine::setDefaultPolicy()</code>, <code>EvaluationResult::isDefaultPolicy</code>.</td>
+<td style="text-align: left;">Enforces fail-safe default-deny security principles without unhandled packet drops.</td>
+<td style="text-align: left;"><code>TC-FALL-01</code> (unmatched packet triggering default-deny fallback).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-development-methodology-11-engineering-phases">5. Development Methodology (11 Engineering Phases)</h2>
+<p>The project was constructed following a structured 11-phase software engineering lifecycle. Each phase defines specific inputs, technical activities, concrete outputs, architectural dependencies, and formal validation criteria.</p>
+<div class="codehilite"><pre><span></span><code>[Phase 1: Requirements] 
+       │
+       ▼
+[Phase 2: System Design] 
+       │
+       ▼
+[Phase 3: OOP Architecture] 
+       │
+       ▼
+[Phase 4: Packet &amp; IP Math] ────► [Phase 5: Conditions &amp; Actions]
+                                               │
+                                               ▼
+[Phase 7: Packet Engine] ◄──── [Phase 6: Rule Management &amp; Priority]
+       │
+       ├──────────────────────────────┐
+       ▼                              ▼
+[Phase 8: Config Persistence]   [Phase 9: Audit Logging &amp; Metrics]
+       │                              │
+       └──────────────┬───────────────┘
+                      ▼
+        [Phase 10: Testing &amp; Verification]
+                      │
+                      ▼
+        [Phase 11: Integration &amp; Demonstration]
+</code></pre></div>
+
+<h3 id="phase-1-requirement-analysis-and-specification">Phase 1: Requirement Analysis and Specification</h3>
+<ul>
+<li><strong>Purpose:</strong> Formulate strict functional and non-functional requirements for an educational offline firewall simulator.</li>
+<li><strong>Inputs:</strong> Undergraduate OOP curriculum guidelines; RFC 4632 (CIDR); standard network access control list (ACL) specifications.</li>
+<li><strong>Activities:</strong> Define packet attributes (IP, port, protocol, direction); define action types (<code>ALLOW</code>, <code>BLOCK</code>, <code>REJECT</code>, <code>LOG</code>); establish the "First Terminal Verdict Wins" semantic contract.</li>
+<li><strong>Outputs:</strong> Formal requirement specification document.</li>
+<li><strong>Dependencies:</strong> None.</li>
+<li><strong>Validation Criteria:</strong> Every requirement is testable and strictly scoped to non-privileged user space.</li>
+</ul>
+<h3 id="phase-2-system-and-rule-model-design">Phase 2: System and Rule-Model Design</h3>
+<ul>
+<li><strong>Purpose:</strong> Design data structures and evaluation semantics to eliminate policy ambiguity.</li>
+<li><strong>Inputs:</strong> Phase 1 specifications.</li>
+<li><strong>Activities:</strong> Formulate the relationship between rules, conditions, actions, and priorities; establish numeric priority semantics ($1 = \text{highest}$, $65535 = \text{lowest}$).</li>
+<li><strong>Outputs:</strong> System flow diagrams and mathematical condition specifications.</li>
+<li><strong>Dependencies:</strong> Phase 1.</li>
+<li><strong>Validation Criteria:</strong> Separation established between terminal actions (<code>ALLOW</code>, <code>BLOCK</code>, <code>REJECT</code>) and non-terminal actions (<code>LOG</code>).</li>
+</ul>
+<h3 id="phase-3-object-oriented-architecture-design">Phase 3: Object-Oriented Architecture Design</h3>
+<ul>
+<li><strong>Purpose:</strong> Create an extensible class hierarchy leveraging fundamental OOP principles.</li>
+<li><strong>Inputs:</strong> Phase 2 models.</li>
+<li><strong>Activities:</strong> Design the <code>RuleCondition</code> abstract base class; define pure virtual <code>matches()</code> and <code>clone()</code> methods; establish move-only semantics for <code>FirewallRule</code> to own polymorphic conditions.</li>
+<li><strong>Outputs:</strong> UML class diagram and header file skeletons (<code>include/*.hpp</code>).</li>
+<li><strong>Dependencies:</strong> Phase 2.</li>
+<li><strong>Validation Criteria:</strong> Header files compile with forward declarations; zero circular dependencies; no raw memory management.</li>
+</ul>
+<h3 id="phase-4-packet-and-ipcidr-representation">Phase 4: Packet and IP/CIDR Representation</h3>
+<ul>
+<li><strong>Purpose:</strong> Implement efficient representation of network packets and binary IP address arithmetic.</li>
+<li><strong>Inputs:</strong> <code>include/Packet.hpp</code>.</li>
+<li><strong>Activities:</strong> Implement dotted-quad string parsing to 32-bit unsigned integers; implement 32-bit subnet mask calculation (<code>prefix == 0 ? 0 : 0xFFFFFFFFu &lt;&lt; (32 - prefix)</code>); validate port numbers (1–65535).</li>
+<li><strong>Outputs:</strong> <code>src/Packet.cpp</code>.</li>
+<li><strong>Dependencies:</strong> Phase 3.</li>
+<li><strong>Validation Criteria:</strong> Correct bitwise parsing verified across <code>/0</code>, <code>/24</code>, <code>/32</code> prefix masks.</li>
+</ul>
+<h3 id="phase-5-condition-and-action-implementation">Phase 5: Condition and Action Implementation</h3>
+<ul>
+<li><strong>Purpose:</strong> Implement concrete condition classes inheriting from <code>RuleCondition</code>.</li>
+<li><strong>Inputs:</strong> <code>include/RuleCondition.hpp</code>, <code>src/Packet.cpp</code>.</li>
+<li><strong>Activities:</strong> Implement <code>IPCondition</code> (source/dest CIDR matching), <code>PortCondition</code> (source/dest port ranges), <code>ProtocolCondition</code> (TCP, UDP, ICMP), and <code>DirectionCondition</code> (INBOUND, OUTBOUND).</li>
+<li><strong>Outputs:</strong> <code>src/RuleCondition.cpp</code>.</li>
+<li><strong>Dependencies:</strong> Phase 4.</li>
+<li><strong>Validation Criteria:</strong> 100% unit-test pass rate on standalone condition matching across true/false edge cases.</li>
+</ul>
+<h3 id="phase-6-rule-management-and-ordering">Phase 6: Rule Management and Ordering</h3>
+<ul>
+<li><strong>Purpose:</strong> Maintain an ordered registry of active firewall rules.</li>
+<li><strong>Inputs:</strong> <code>include/FirewallRule.hpp</code>, <code>include/RuleManager.hpp</code>.</li>
+<li><strong>Activities:</strong> Implement rule insertion with uniqueness checks on Rule IDs; implement deterministic priority sorting using <code>std::stable_sort</code>; provide rule enablement/disablement toggles.</li>
+<li><strong>Outputs:</strong> <code>src/FirewallRule.cpp</code>, <code>src/RuleManager.cpp</code>.</li>
+<li><strong>Dependencies:</strong> Phase 5.</li>
+<li><strong>Validation Criteria:</strong> Reordering or inserting rules preserves strictly sorted order by priority; duplicate rule IDs are rejected.</li>
+</ul>
+<h3 id="phase-7-packet-evaluation-engine">Phase 7: Packet Evaluation Engine</h3>
+<ul>
+<li><strong>Purpose:</strong> Execute packet traversal across rules and render deterministic decisions.</li>
+<li><strong>Inputs:</strong> <code>include/FirewallEngine.hpp</code>, <code>RuleManager</code>, <code>Packet</code>.</li>
+<li><strong>Activities:</strong> Implement the evaluation loop: iterate through sorted rules; evaluate conjunction of all conditions per rule; if all conditions match, record non-terminal <code>LOG</code> tap or execute terminal action (<code>ALLOW</code>, <code>BLOCK</code>, <code>REJECT</code>); fall back to configurable default policy if no terminal rule matches.</li>
+<li><strong>Outputs:</strong> <code>src/FirewallEngine.cpp</code>.</li>
+<li><strong>Dependencies:</strong> Phase 6.</li>
+<li><strong>Validation Criteria:</strong> Priority inversion correctly resolved; first terminal verdict terminates traversal; unhandled packets trigger default policy.</li>
+</ul>
+<h3 id="phase-8-configuration-persistence">Phase 8: Configuration Persistence</h3>
+<ul>
+<li><strong>Purpose:</strong> Provide atomic serialization and deserialization of firewall policies.</li>
+<li><strong>Inputs:</strong> <code>include/ConfigurationManager.hpp</code>, rule repository.</li>
+<li><strong>Activities:</strong> Define custom human-readable configuration grammar (<code>RULE &lt;id&gt; &lt;prio&gt; &lt;name&gt; ...</code>); implement parser with syntax error detection; implement transactional load with temporary rollback buffer to prevent state corruption upon file errors.</li>
+<li><strong>Outputs:</strong> <code>src/ConfigurationManager.cpp</code>, <code>rules/sample_rules.conf</code>.</li>
+<li><strong>Dependencies:</strong> Phase 6, Phase 7.</li>
+<li><strong>Validation Criteria:</strong> Corrupted lines in configuration files abort the transaction and restore previous active rules without data loss.</li>
+</ul>
+<h3 id="phase-9-audit-logging-and-statistics">Phase 9: Audit Logging and Statistics</h3>
+<ul>
+<li><strong>Purpose:</strong> Record operational events, packet decisions, and aggregated metrics.</li>
+<li><strong>Inputs:</strong> <code>include/AuditLogger.hpp</code>, <code>include/Statistics.hpp</code>.</li>
+<li><strong>Activities:</strong> Implement timestamped plain-text logging (<code>firewall_audit.log</code>); implement structured CSV decision tracing (<code>firewall_decisions.csv</code>); implement per-rule hit tallying and byte counters.</li>
+<li><strong>Outputs:</strong> <code>src/AuditLogger.cpp</code>, <code>src/Statistics.cpp</code>.</li>
+<li><strong>Dependencies:</strong> Phase 7.</li>
+<li><strong>Validation Criteria:</strong> Every evaluated packet produces an audit trail entry; byte and packet counters match mathematical expectations.</li>
+</ul>
+<h3 id="phase-10-testing-and-validation">Phase 10: Testing and Validation</h3>
+<ul>
+<li><strong>Purpose:</strong> Rigorously verify all functional edge cases and performance characteristics.</li>
+<li><strong>Inputs:</strong> Test harness (<code>tests/test_engine.cpp</code>).</li>
+<li><strong>Activities:</strong> Author 15 dedicated unit test cases covering IP parsing, CIDR masks, port boundaries, duplicate IDs, priority ordering, non-terminal logging, and transactional rollback; build test executable and execute in automated test harness.</li>
+<li><strong>Outputs:</strong> <code>test_engine.exe</code>, test results summary.</li>
+<li><strong>Dependencies:</strong> Phases 1–9.</li>
+<li><strong>Validation Criteria:</strong> 15/15 unit tests pass (100% success rate); zero unhandled exceptions.</li>
+</ul>
+<h3 id="phase-11-integration-and-demonstration">Phase 11: Integration and Demonstration</h3>
+<ul>
+<li><strong>Purpose:</strong> Assemble the interactive command-line interface and benchmark runner for college viva demonstration.</li>
+<li><strong>Inputs:</strong> All engine modules, <code>main.cpp</code>, <code>SimulationRunner.cpp</code>.</li>
+<li><strong>Activities:</strong> Implement 12-option interactive CLI menu; implement automated scenarios A through G; implement 50,000-packet throughput benchmark.</li>
+<li><strong>Outputs:</strong> <code>firewall.exe</code>, reproducible live demonstration.</li>
+<li><strong>Dependencies:</strong> Phase 10.</li>
+<li><strong>Validation Criteria:</strong> Application compiles with zero warnings under <code>-O2 -Wall -Wextra -Wpedantic</code>; live demo runs seamlessly from cold start.</li>
+</ul>
+<hr />
+<h2 id="6-end-to-end-packet-processing-methodology">6. End-to-End Packet Processing Methodology</h2>
+<p>The following flowchart and execution lifecycle describe the exact algorithmic path an arbitrary network packet traverses through the firewall engine:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Raw Packet Received: {SrcIP, DstIP, SrcPort, DstPort, Protocol, Direction}]</span>
+<span class="w">                                </span><span class="na">│</span>
+<span class="w">                                </span><span class="na">▼</span>
+<span class="w">                   </span><span class="k">[Validate Packet Integrity]</span>
+<span class="w">                                </span><span class="na">│</span>
+<span class="w">                                </span><span class="na">▼</span>
+<span class="w">             </span><span class="k">[Fetch Active Rules Sorted by Priority (1..N)]</span>
+<span class="w">                                </span><span class="na">│</span>
+<span class="w">                                </span><span class="na">▼</span>
+<span class="w">              </span><span class="na">┌────────► [Next Active Rule?] ────(No)───┐</span>
+<span class="w">              </span><span class="na">│                 │ (Yes)                 │</span>
+<span class="w">              </span><span class="na">│                 ▼                       │</span>
+<span class="w">              </span><span class="na">│     [Evaluate All Conditions]           │</span>
+<span class="w">              </span><span class="na">│     (Short-circuit conjunction)         │</span>
+<span class="w">              </span><span class="na">│                 │                       │</span>
+<span class="w">              </span><span class="na">│        (Match?) ┴────────(No)───────────┤</span>
+<span class="w">              </span><span class="na">│                 │ (Yes)                 │</span>
+<span class="w">              </span><span class="na">│                 ▼                       │</span>
+<span class="w">              </span><span class="na">│      [Increment Rule Hit Count]         │</span>
+<span class="w">              </span><span class="na">│                 │                       │</span>
+<span class="w">              </span><span class="na">│         (Action</span><span class="w"> </span><span class="o">=</span><span class="s">= LOG?)                │</span>
+<span class="w">              </span><span class="na">│          /            \                 │</span>
+<span class="w">              </span><span class="na">│     (Yes)              (No)             │</span>
+<span class="w">              </span><span class="na">│      /                  \               │</span>
+<span class="w">              </span><span class="na">│     ▼                    ▼              │</span>
+<span class="w">              </span><span class="na">│ [Emit Non-Terminal   [Determine Verdict]│</span>
+<span class="w">              </span><span class="na">│  Audit Log Event]    (ALLOW/BLOCK/REJECT)</span>
+<span class="w">              </span><span class="na">│     │                    │              │</span>
+<span class="w">              </span><span class="na">└─────┘                    ▼              │</span>
+<span class="w">                                  </span><span class="na">[Terminal Break]      │</span>
+<span class="w">                                         </span><span class="na">│              │</span>
+<span class="w">                                         </span><span class="na">▼              │</span>
+<span class="w">                                  </span><span class="na">[Update Stats]        │</span>
+<span class="w">                                         </span><span class="na">│              │</span>
+<span class="w">                                         </span><span class="na">▼              │</span>
+<span class="w">                                  </span><span class="na">[Emit Audit Trace]    │</span>
+<span class="w">                                         </span><span class="na">│              │</span>
+<span class="w">                                         </span><span class="na">▼              │</span>
+<span class="w">                                  </span><span class="na">[Return Result]       │</span>
+<span class="w">                                         </span><span class="na">▲              │</span>
+<span class="w">                                         </span><span class="na">│              │</span>
+<span class="w">                    </span><span class="na">(No terminal rule matched)          │</span>
+<span class="w">                                         </span><span class="na">│              │</span>
+<span class="w">                                         </span><span class="na">┴──────────────┘</span>
+<span class="w">                                         </span><span class="na">│</span>
+<span class="w">                                         </span><span class="na">▼</span>
+<span class="w">                            </span><span class="k">[Apply Default Policy]</span>
+<span class="w">                            </span><span class="na">(e.g., Default Deny)</span>
+<span class="w">                                         </span><span class="na">│</span>
+<span class="w">                                         </span><span class="na">▼</span>
+<span class="w">                            </span><span class="k">[Record Default Fallback]</span>
+<span class="w">                                         </span><span class="na">│</span>
+<span class="w">                                         </span><span class="na">▼</span>
+<span class="w">                            </span><span class="k">[Update Stats &amp; Audit Log]</span>
+<span class="w">                                         </span><span class="na">│</span>
+<span class="w">                                         </span><span class="na">▼</span>
+<span class="w">                            </span><span class="k">[Return Final Verdict]</span>
+</code></pre></div>
+
+<h3 id="61-evaluation-lifecycle-steps">6.1 Evaluation Lifecycle Steps</h3>
+<ol>
+<li><strong>Packet Ingestion &amp; Integrity Check:</strong> The packet is received with validated source/destination IPs, transport ports, transport protocol, and packet size in bytes.</li>
+<li><strong>Rule Registry Iteration:</strong> The engine iterates over rules in strictly ascending priority order. Disabled rules are skipped in $O(1)$ time.</li>
+<li><strong>Short-Circuit Predicate Conjunction:</strong> For a given rule, each owned <code>RuleCondition</code> is evaluated sequentially. If any condition returns <code>false</code>, evaluation of that rule halts immediately.</li>
+<li><strong>Hit Counter Update:</strong> When all conditions evaluate to <code>true</code>, the rule's internal hit counter is incremented.</li>
+<li><strong>Action Handling:</strong>
+   - If the rule's action is <code>LOG</code>: The engine records an audit message noting the match, logs packet metadata, and <strong>continues traversal</strong> to subsequent rules.
+   - If the rule's action is <code>ALLOW</code>, <code>BLOCK</code>, or <code>REJECT</code>: A terminal decision is rendered (<code>ALLOWED</code>, <code>BLOCKED</code>, or <code>REJECTED</code>). Traversal terminates immediately (<strong>First Terminal Verdict Wins</strong>).</li>
+<li><strong>Default Fallback:</strong> If traversal exhausts all rules without encountering a terminal action, the engine assigns the configurable default policy (by default, <code>BLOCKED</code> under a secure Default-Deny posture).</li>
+<li><strong>Audit &amp; Telemetry Export:</strong> Metrics (packet counts, byte volumes, verdict tallies) are updated, and a structured record is written to both the plain-text audit log and the CSV decision history.</li>
+</ol>
+<hr />
+<h2 id="7-conclusion">7. Conclusion</h2>
+<p>By separating theoretical academic research from practical educational gaps, the <strong>Firewall Rule Engine</strong> provides a rigorous, demonstrable software engineering artifact. It replaces flawed procedural textbook examples with an extensible, modern C++17 object-oriented architecture that faithfully demonstrates real-world firewall concepts—polymorphism, deterministic priority resolution, non-terminal logging taps, transactional configuration persistence, and fail-safe default-deny policies.</p>
+</body>
+</html>

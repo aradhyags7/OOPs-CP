@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firewall Rule Engine - OOP Concepts & Architectural Design</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@page {
+    size: A4 portrait;
+    margin: 18mm 16mm 18mm 16mm;
+    @bottom-center {
+        content: counter(page);
+        font-family: 'Inter', sans-serif;
+        font-size: 8.5pt;
+        color: #64748b;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 9.8pt;
+    line-height: 1.62;
+    color: #1e293b;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Document Header / Cover Banner */
+.doc-header {
+    border-bottom: 3px solid #1e3a8a;
+    background: linear-gradient(to right, #f8fafc, #ffffff);
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 28px;
+}
+
+.doc-badge {
+    display: inline-block;
+    background-color: #1e3a8a;
+    color: #ffffff;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.doc-header h1 {
+    font-size: 19pt;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    line-height: 1.25;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.doc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 8.5pt;
+    color: #475569;
+    margin-top: 12px;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 10px;
+}
+
+.doc-meta-item strong {
+    color: #0f172a;
+}
+
+/* Headings */
+h1 {
+    font-size: 14.5pt;
+    font-weight: 700;
+    color: #1e3a8a;
+    border-bottom: 1.5px solid #cbd5e1;
+    padding-bottom: 6px;
+    margin-top: 30px;
+    margin-bottom: 14px;
+    page-break-after: avoid;
+}
+
+.doc-header h1 {
+    page-break-after: auto;
+}
+
+h2 {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #1e40af;
+    margin-top: 22px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #334155;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+}
+
+h4, h5, h6 {
+    font-size: 9.8pt;
+    font-weight: 600;
+    color: #475569;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+}
+
+p {
+    margin: 0 0 10px 0;
+    text-align: justify;
+}
+
+ul, ol {
+    margin: 0 0 12px 0;
+    padding-left: 22px;
+}
+
+li {
+    margin-bottom: 4px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 22px 0;
+}
+
+/* Links */
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 20px 0;
+    font-size: 8.5pt;
+    line-height: 1.45;
+    page-break-inside: avoid;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+th, td {
+    padding: 7px 10px;
+    border: 1px solid #cbd5e1;
+    vertical-align: top;
+}
+
+th {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    letter-spacing: 0.2px;
+}
+
+tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+/* Code & Preformatted */
+code {
+    font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 8.5pt;
+    background-color: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+pre {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #1e3a8a;
+    border-radius: 4px;
+    padding: 11px 13px;
+    overflow-x: auto;
+    margin: 14px 0;
+    page-break-inside: avoid;
+}
+
+pre code {
+    font-size: 8pt;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    color: #0f172a;
+    line-height: 1.5;
+}
+
+/* Blockquotes / Callout Alerts */
+blockquote {
+    border-left: 4px solid #3b82f6;
+    background-color: #eff6ff;
+    color: #1e40af;
+    margin: 14px 0;
+    padding: 10px 16px;
+    border-radius: 0 6px 6px 0;
+    font-size: 9pt;
+    page-break-inside: avoid;
+}
+
+blockquote p {
+    margin: 0;
+    color: #1e3a8a;
+}
+
+/* Mermaid Diagrams Container */
+.mermaid-wrapper {
+    margin: 22px 0;
+    text-align: center;
+    page-break-inside: avoid;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.mermaid-wrapper svg {
+    max-width: 100% !important;
+    height: auto !important;
+    display: inline-block;
+}
+
+.mermaid-caption {
+    font-size: 8pt;
+    color: #64748b;
+    font-style: italic;
+    margin-top: 10px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 6px;
+}
+
+/* Print Utilities */
+@media print {
+    body {
+        font-size: 9.5pt;
+    }
+    .page-break {
+        page-break-before: always;
+    }
+    .no-break {
+        page-break-inside: avoid;
+    }
+}
+
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */
+</style>
+<script>
+window.addEventListener('DOMContentLoaded', async () => {
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: 'neutral',
+        securityLevel: 'loose',
+        fontFamily: 'Inter, -apple-system, Segoe UI, sans-serif'
+    });
+    try {
+        await mermaid.run({
+            querySelector: '.mermaid'
+        });
+    } catch (e) {
+        console.error('Mermaid render error:', e);
+    }
+    const flag = document.createElement('div');
+    flag.id = 'render-complete';
+    flag.style.display = 'none';
+    document.body.appendChild(flag);
+});
+</script>
+</head>
+<body>
+<h1 id="firewall-rule-engine-object-oriented-architecture-and-design-principles">Firewall Rule Engine: Object-Oriented Architecture and Design Principles</h1>
+<p><strong>Course:</strong> Second-Year Object-Oriented Programming in C++ (CS201 / CE201)<br />
+<strong>Project:</strong> Firewall Rule Engine in Modern C++17<br />
+<strong>Artifact Classification:</strong> Software Architecture &amp; OOP Concept Evaluation<br />
+<strong>Repository Location:</strong> <code>OOP_Concepts_and_Architecture.md</code>  </p>
+<hr />
+<h2 id="1-architectural-overview">1. Architectural Overview</h2>
+<p>The <strong>Firewall Rule Engine</strong> is engineered as a modular, user-space packet inspection and filtering system implemented in Modern C++17. The architecture strictly adheres to object-oriented software engineering principles, separating concerns across distinct domains: packet modeling, condition evaluation, rule management, decision processing, configuration persistence, audit logging, and telemetry tracking.</p>
+<h3 id="11-architectural-subsystems-and-boundaries">1.1 Architectural Subsystems and Boundaries</h3>
+<p>The engine consists of five primary layers:
+1. <strong>Domain Model Layer:</strong> Defines foundational network primitives (<code>Packet</code>, <code>Protocol</code>, <code>Direction</code>, <code>ActionType</code>, <code>Decision</code>, <code>IPField</code>, <code>PortField</code>, <code>ProtocolMatch</code>, <code>DirectionMatch</code>).
+2. <strong>Predicate Evaluation Layer:</strong> Abstract base interface (<code>RuleCondition</code>) and concrete filtering strategies (<code>IPCondition</code>, <code>PortCondition</code>, <code>ProtocolCondition</code>, <code>DirectionCondition</code>).
+3. <strong>Policy &amp; Rule Management Layer:</strong> Composite rule entity (<code>FirewallRule</code>) and prioritized rule repository (<code>RuleManager</code>).
+4. <strong>Execution &amp; Orchestration Layer:</strong> Evaluation engine (<code>FirewallEngine</code>), telemetry collector (<code>Statistics</code>), and persistent event sink (<code>AuditLogger</code>).
+5. <strong>Persistence &amp; Demonstration Layer:</strong> Transactional configuration manager (<code>ConfigurationManager</code>), synthetic packet generator (<code>PacketGenerator</code>), and simulation orchestrator (<code>SimulationRunner</code>).</p>
+<hr />
+<h2 id="2-mermaid-architecture-and-class-diagrams">2. Mermaid Architecture and Class Diagrams</h2>
+<h3 id="21-high-level-component-architecture">2.1 High-Level Component Architecture</h3>
+<div class="mermaid-wrapper" id="mermaid-container-0"><pre class="mermaid" id="mermaid-0">
+graph TD
+    subgraph Client Application
+        CLI[Interactive CLI / main.cpp]
+        SIM[SimulationRunner / Scenarios A-G]
+        PGEN[PacketGenerator / Synthetic Traffic]
+    end
+
+    subgraph Core Engine Facade
+        ENG[FirewallEngine]
+    end
+
+    subgraph Policy Management
+        RM[RuleManager]
+        FR[FirewallRule]
+        RC[&lt;&lt;abstract&gt;&gt; RuleCondition]
+        IPC[IPCondition]
+        PC[PortCondition]
+        PRC[ProtocolCondition]
+        DC[DirectionCondition]
+    end
+
+    subgraph Observability &amp; Persistence
+        AL[AuditLogger]
+        STAT[Statistics]
+        CFG[ConfigurationManager]
+    end
+
+    subgraph Data Artifacts
+        AUD_LOG[(firewall_audit.log)]
+        CSV_DEC[(firewall_decisions.csv)]
+        CONF_FILE[(rules/sample_rules.conf)]
+    end
+
+    CLI --&gt; ENG
+    SIM --&gt; ENG
+    PGEN --&gt; ENG
+    SIM --&gt; PGEN
+
+    ENG --&gt; RM
+    ENG --&gt; AL
+    ENG --&gt; STAT
+
+    CFG --&gt; RM
+    CFG -.-&gt; CONF_FILE
+
+    RM --&gt;|owns 1..*| FR
+    FR --&gt;|owns 1..*| RC
+    IPC -.-&gt;|implements| RC
+    PC -.-&gt;|implements| RC
+    PRC -.-&gt;|implements| RC
+    DC -.-&gt;|implements| RC
+
+    AL --&gt; AUD_LOG
+    AL --&gt; CSV_DEC
+</pre><div class="mermaid-caption">System Architectural Diagram #1</div></div>
+
+<h3 id="22-comprehensive-uml-class-diagram">2.2 Comprehensive UML Class Diagram</h3>
+<div class="mermaid-wrapper" id="mermaid-container-1"><pre class="mermaid" id="mermaid-1">
+classDiagram
+    direction TB
+
+    class Protocol {
+        &lt;&lt;enumeration&gt;&gt;
+        TCP
+        UDP
+        ICMP
+    }
+
+    class Direction {
+        &lt;&lt;enumeration&gt;&gt;
+        INBOUND
+        OUTBOUND
+    }
+
+    class ActionType {
+        &lt;&lt;enumeration&gt;&gt;
+        ALLOW
+        BLOCK
+        REJECT
+        LOG
+    }
+
+    class Decision {
+        &lt;&lt;enumeration&gt;&gt;
+        ALLOWED
+        BLOCKED
+        REJECTED
+    }
+
+    class IPField {
+        &lt;&lt;enumeration&gt;&gt;
+        SOURCE
+        DESTINATION
+    }
+
+    class PortField {
+        &lt;&lt;enumeration&gt;&gt;
+        SOURCE
+        DESTINATION
+    }
+
+    class ProtocolMatch {
+        &lt;&lt;enumeration&gt;&gt;
+        TCP
+        UDP
+        ICMP
+        ANY
+    }
+
+    class DirectionMatch {
+        &lt;&lt;enumeration&gt;&gt;
+        INBOUND
+        OUTBOUND
+        ANY
+    }
+
+    class Packet {
+        +uint64_t id
+        +uint32_t srcIP
+        +uint32_t dstIP
+        +uint16_t srcPort
+        +uint16_t dstPort
+        +Protocol protocol
+        +Direction direction
+        +uint32_t payloadSize
+        +double timestamp
+        +Packet()
+        +Packet(id, srcIP, dstIP, srcPort, dstPort, proto, dir, size, ts)
+        +parseIPv4(string ipStr)$ uint32_t
+        +ipToString(uint32_t ip)$ string
+        +getProtocolString() string
+        +getDirectionString() string
+        +toString() string
+    }
+
+    class RuleCondition {
+        &lt;&lt;abstract&gt;&gt;
+        +virtual ~RuleCondition()
+        +matches(Packet pkt)* bool
+        +getDescription()* string
+    }
+
+    class IPCondition {
+        -uint32_t networkIP
+        -uint32_t subnetMask
+        -uint32_t prefix
+        -IPField targetField
+        -string originalSpec
+        +IPCondition(string cidrOrIP, IPField field)
+        +matches(Packet pkt) bool
+        +getDescription() string
+        +getNetworkIP() uint32_t
+        +getSubnetMask() uint32_t
+        +getPrefix() uint32_t
+        +getTargetField() IPField
+        +calculateMask(uint32_t pfx)$ uint32_t
+    }
+
+    class PortCondition {
+        -uint16_t minPort
+        -uint16_t maxPort
+        -PortField targetField
+        +PortCondition(uint16_t port, PortField field)
+        +PortCondition(uint16_t minP, uint16_t maxP, PortField field)
+        +matches(Packet pkt) bool
+        +getDescription() string
+        +getMinPort() uint16_t
+        +getMaxPort() uint16_t
+        +getTargetField() PortField
+    }
+
+    class ProtocolCondition {
+        -ProtocolMatch matchProto
+        +ProtocolCondition(ProtocolMatch proto)
+        +matches(Packet pkt) bool
+        +getDescription() string
+        +getProtocolMatch() ProtocolMatch
+    }
+
+    class DirectionCondition {
+        -DirectionMatch matchDir
+        +DirectionCondition(DirectionMatch dir)
+        +matches(Packet pkt) bool
+        +getDescription() string
+        +getDirectionMatch() DirectionMatch
+    }
+
+    class FirewallRule {
+        -int id
+        -int priority
+        -bool enabled
+        -string name
+        -ActionType actionType
+        -vector~unique_ptr~RuleCondition~~ conditions
+        +FirewallRule(id, priority, enabled, name, action)
+        +addCondition(unique_ptr~RuleCondition~ cond)
+        +matches(Packet pkt) bool
+        +getId() int
+        +getPriority() int
+        +setPriority(int newPriority)
+        +isEnabled() bool
+        +setEnabled(bool state)
+        +getName() string
+        +setName(string newName)
+        +getActionType() ActionType
+        +setActionType(ActionType act)
+        +getConditions() vector~unique_ptr~RuleCondition~~
+        +getConditionCount() size_t
+        +getActionString() string
+        +getConditionsSummary() string
+    }
+
+    class RuleManager {
+        -vector~FirewallRule~ rules
+        +RuleManager()
+        +addRule(FirewallRule rule) bool
+        +removeRule(int ruleId) bool
+        +modifyRulePriority(int ruleId, int newPriority) bool
+        +setRuleEnabled(int ruleId, bool enabled) bool
+        +findRuleById(int ruleId) FirewallRule*
+        +sortRules()
+        +clear()
+        +size() size_t
+        +getRules() vector~FirewallRule~
+        +replaceAll(vector~FirewallRule~ newRules)
+    }
+
+    class EvaluationResult {
+        +uint64_t packetId
+        +Decision finalDecision
+        +int matchedRuleId
+        +string matchedRuleName
+        +string reason
+        +vector~int~ loggedRuleIds
+        +double timestamp
+    }
+
+    class Statistics {
+        -uint64_t packetsProcessed
+        -uint64_t packetsAllowed
+        -uint64_t packetsBlocked
+        -uint64_t packetsRejected
+        -uint64_t loggingEventsRecorded
+        -uint64_t defaultPolicyHits
+        -uint64_t totalBytesProcessed
+        -uint64_t totalBytesAllowed
+        -uint64_t totalBytesBlocked
+        -unordered_map~int, uint64_t~ ruleHitCounts
+        +Statistics()
+        +recordDecision(Decision dec, int ruleId, uint32_t bytes)
+        +recordLogEvent(int ruleId)
+        +reset()
+        +getPacketsProcessed() uint64_t
+        +getPacketsAllowed() uint64_t
+        +getPacketsBlocked() uint64_t
+        +getPacketsRejected() uint64_t
+        +getLoggingEventsRecorded() uint64_t
+        +getDefaultPolicyHits() uint64_t
+        +getTotalBytesProcessed() uint64_t
+        +getRuleHitCounts() unordered_map
+        +printSummary()
+    }
+
+    class AuditLogger {
+        -ofstream logFile
+        -ofstream csvFile
+        -bool enableConsole
+        -bool enableFile
+        -bool enableCsv
+        -uint64_t loggingErrorCount
+        +AuditLogger()
+        +~AuditLogger()
+        +initialize(string logFilename, string csvFilename) bool
+        +logTerminalDecision(Packet pkt, Decision dec, int ruleId, string ruleName, string reason)
+        +logNonTerminalTap(Packet pkt, int ruleId, string ruleName)
+        +setConsoleOutput(bool enable)
+        +setFileOutput(bool enable)
+        +setCsvOutput(bool enable)
+        +getErrorCount() uint64_t
+        +close()
+        +getTimestampString()$ string
+        +decisionToString(Decision dec)$ string
+    }
+
+    class FirewallEngine {
+        -RuleManager&amp; ruleManager
+        -Decision defaultPolicy
+        -AuditLogger logger
+        -Statistics statistics
+        -bool verboseTrace
+        +FirewallEngine(RuleManager&amp; rm)
+        +processPacket(Packet pkt) EvaluationResult
+        +setDefaultPolicy(Decision policy)
+        +getDefaultPolicy() Decision
+        +getRuleManager() RuleManager
+        +getStatistics() Statistics
+        +getLogger() AuditLogger
+        +setVerbose(bool v)
+    }
+
+    class ConfigurationManager {
+        +loadConfiguration(string filePath, RuleManager targetManager, string errorMessage)$ bool
+        +saveConfiguration(string filePath, RuleManager sourceManager, string errorMessage)$ bool
+        -trim(string s)$ string
+        -splitTokens(string line)$ vector~string~
+        -extractQuotedString(string line)$ string
+    }
+
+    class PacketGenerator {
+        +createHTTPS(id, srcIP, dstIP, dir)$ Packet
+        +createDNS(id, srcIP, dstIP, dir)$ Packet
+        +createSSH(id, srcIP, dstIP, dir)$ Packet
+        +createTelnet(id, srcIP, dstIP, dir)$ Packet
+        +createPing(id, srcIP, dstIP, dir)$ Packet
+        +generateBenchmarkBatch(size_t count)$ vector~Packet~
+    }
+
+    class SimulationRunner {
+        -FirewallEngine&amp; engine
+        +SimulationRunner(FirewallEngine&amp; eng)
+        +runScenarioA_BasicFiltering()
+        +runScenarioB_PortFiltering()
+        +runScenarioC_RulePriority()
+        +runScenarioD_SubnetFiltering()
+        +runScenarioE_AuditLogging()
+        +runScenarioF_ConfigurationPersistence()
+        +runScenarioG_BatchBenchmark(size_t packetCount)
+        +printHeader(string title)$
+        +printResultRow(EvaluationResult res, Packet pkt)$
+    }
+
+    RuleCondition &lt;|-- IPCondition
+    RuleCondition &lt;|-- PortCondition
+    RuleCondition &lt;|-- ProtocolCondition
+    RuleCondition &lt;|-- DirectionCondition
+
+    FirewallRule *-- RuleCondition : owns via unique_ptr
+    RuleManager *-- FirewallRule : owns collection
+    FirewallEngine o-- RuleManager : references
+    FirewallEngine *-- AuditLogger : aggregates
+    FirewallEngine *-- Statistics : aggregates
+    FirewallEngine ..&gt; Packet : evaluates
+    FirewallEngine ..&gt; EvaluationResult : returns
+    ConfigurationManager ..&gt; RuleManager : populates/serializes
+    SimulationRunner o-- FirewallEngine : references
+    SimulationRunner ..&gt; PacketGenerator : uses
+</pre><div class="mermaid-caption">System Architectural Diagram #2</div></div>
+
+<hr />
+<h2 id="3-detailed-oop-concepts-implementation-matrix">3. Detailed OOP Concepts Implementation Matrix</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">OOP Principle</th>
+<th style="text-align: left;">Actual Class / Method in Codebase</th>
+<th style="text-align: left;">Concrete Technical Implementation</th>
+<th style="text-align: left;">Practical Software Engineering Benefit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Encapsulation</strong></td>
+<td style="text-align: left;"><code>FirewallRule</code>, <code>RuleManager</code>, <code>Statistics</code>, <code>AuditLogger</code></td>
+<td style="text-align: left;">Private member fields (<code>id</code>, <code>priority</code>, <code>enabled</code>, <code>conditions</code>, <code>ruleHitCounts</code>). Access is mediated via const reference getters and strict mutators (<code>setPriority</code>, <code>setEnabled</code>). In <code>Packet</code>, IP address strings are converted once to 32-bit unsigned integers.</td>
+<td style="text-align: left;">Protects rule invariants from corrupted state, guarantees numerical priority integrity, and isolates internal storage structures (e.g., bitmasks, maps) from client tampering.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Abstraction</strong></td>
+<td style="text-align: left;"><code>RuleCondition</code> (<code>include/RuleCondition.hpp</code>)</td>
+<td style="text-align: left;">Declares a pure virtual interface: <code>virtual bool matches(const Packet&amp; pkt) const = 0;</code> and <code>virtual std::string getDescription() const = 0;</code>.</td>
+<td style="text-align: left;">Decouples the packet evaluation engine from specific filtering dimensions. The engine evaluates conditions without knowing whether an IP, port, protocol, or direction is being checked.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Inheritance</strong></td>
+<td style="text-align: left;"><code>IPCondition</code>, <code>PortCondition</code>, <code>ProtocolCondition</code>, <code>DirectionCondition</code></td>
+<td style="text-align: left;">Derived classes publicly inherit from <code>RuleCondition</code> (<code>class IPCondition : public RuleCondition</code>).</td>
+<td style="text-align: left;">Eliminates code duplication for common condition interfaces; enforces uniform polymorphic API across diverse predicate types.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Runtime Polymorphism</strong></td>
+<td style="text-align: left;"><code>FirewallRule::matches()</code> invoking <code>cond-&gt;matches(pkt)</code></td>
+<td style="text-align: left;">Virtual method dispatch via vtable. Derived condition methods are invoked uniformly through <code>std::unique_ptr&lt;RuleCondition&gt;</code> base pointers.</td>
+<td style="text-align: left;">Satisfies the <strong>Open/Closed Principle (OCP)</strong>. New condition types (e.g., TCP Flags, Payload Size, Time-of-Day) can be integrated without modifying <code>FirewallRule</code> or <code>FirewallEngine</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Composition</strong></td>
+<td style="text-align: left;"><code>FirewallRule</code> composing <code>RuleCondition</code>; <code>RuleManager</code> composing <code>FirewallRule</code></td>
+<td style="text-align: left;"><code>FirewallRule</code> maintains <code>std::vector&lt;std::unique_ptr&lt;RuleCondition&gt;&gt; conditions</code>.</td>
+<td style="text-align: left;">Fosters flexible object assembly. A single rule dynamically combines multiple conditions of varying types using logical conjunction (AND).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Move Semantics &amp; RAII</strong></td>
+<td style="text-align: left;"><code>FirewallRule</code>, <code>AuditLogger</code></td>
+<td style="text-align: left;"><code>FirewallRule</code> explicitly deletes copy operations (<code>= delete</code>) and defines move operations (<code>= default</code>). <code>AuditLogger</code> encapsulates <code>std::ofstream</code> handles flushed and closed in the destructor.</td>
+<td style="text-align: left;">Guarantees single-ownership of dynamically allocated conditions without deep-copy overhead. Prevents memory leaks, double-free vulnerabilities, and file descriptor exhaustion.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Association &amp; Dependency Injection</strong></td>
+<td style="text-align: left;"><code>FirewallEngine::FirewallEngine(RuleManager&amp; rm)</code></td>
+<td style="text-align: left;">The engine receives the rule manager by reference in its constructor rather than instantiating it internally.</td>
+<td style="text-align: left;">Decouples subsystems, simplifies unit testing via mock injection, and adheres to the <strong>Inversion of Control (IoC)</strong> design philosophy.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>STL Container &amp; Algorithm Usage</strong></td>
+<td style="text-align: left;"><code>RuleManager::sortRules()</code>, <code>Packet::parseIPv4()</code>, <code>Statistics</code></td>
+<td style="text-align: left;"><code>std::vector</code> for cache-friendly contiguous rule storage; <code>std::stable_sort</code> with a custom lambda comparator; <code>std::unordered_map</code> for $O(1)$ metric tallies.</td>
+<td style="text-align: left;">Guarantees deterministic rule ordering, optimal cache locality during high-frequency packet loops, and prevents memory fragmentation.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-in-depth-analysis-of-individual-oop-principles">4. In-Depth Analysis of Individual OOP Principles</h2>
+<h3 id="41-encapsulation-and-data-invariant-protection">4.1 Encapsulation and Data Invariant Protection</h3>
+<p>In <code>include/Packet.hpp</code> and <code>src/Packet.cpp</code>, network packets store IPv4 addresses as 32-bit unsigned integers (<code>uint32_t</code>) in host byte order rather than raw strings:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Packet</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">id</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">srcIP</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">dstIP</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">srcPort</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">dstPort</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="n">Protocol</span><span class="w"> </span><span class="n">protocol</span><span class="p">{</span><span class="n">Protocol</span><span class="o">::</span><span class="n">TCP</span><span class="p">};</span>
+<span class="w">    </span><span class="n">Direction</span><span class="w"> </span><span class="n">direction</span><span class="p">{</span><span class="n">Direction</span><span class="o">::</span><span class="n">INBOUND</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">payloadSize</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">timestamp</span><span class="p">{</span><span class="mf">0.0</span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">parseIPv4</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ipStr</span><span class="p">);</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">ipToString</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">ip</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">getProtocolString</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">getDirectionString</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">toString</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+
+<p><em>Why this is essential:</em> Parsing dotted-quad strings (<code>"192.168.1.10"</code>) during rule traversal in an inner loop imposes extreme CPU overhead from repeated heap allocations and string scanning. Encapsulating the integer conversion during <code>Packet</code> construction ensures invariant validity upfront and allows condition matching via a single bitwise operation: <code>(packetIP &amp; subnetMask) == networkIP</code>.</p>
+<h3 id="42-abstraction-and-the-pure-virtual-contract">4.2 Abstraction and the Pure Virtual Contract</h3>
+<p>The <code>RuleCondition</code> abstract class defines the minimal contractual obligations required for any packet-matching predicate:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// include/RuleCondition.hpp</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RuleCondition</span><span class="w"> </span><span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">RuleCondition</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">matches</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Packet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pkt</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+
+<p>The client code (<code>FirewallRule</code>) depends exclusively on this abstraction:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// src/FirewallRule.cpp</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">FirewallRule::matches</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Packet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pkt</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">enabled</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cond</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">conditions</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">cond</span><span class="o">-&gt;</span><span class="n">matches</span><span class="p">(</span><span class="n">pkt</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="c1">// Short-circuit evaluation</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="43-inheritance-hierarchy-and-derived-implementations">4.3 Inheritance Hierarchy and Derived Implementations</h3>
+<p>Four concrete condition classes inherit from <code>RuleCondition</code>:
+1. <code>IPCondition</code>: Encapsulates a 32-bit network address, a 32-bit subnet mask, a prefix length (0–32), and a field selector (<code>IPField targetField</code>).
+2. <code>PortCondition</code>: Encapsulates a port range (<code>[minPort, maxPort]</code>) and a selector (<code>PortField targetField</code>). Handles the protocol boundary condition where ICMP packets (which possess no transport ports) evaluate to <code>false</code>.
+3. <code>ProtocolCondition</code>: Encapsulates expected <code>ProtocolMatch</code> (TCP, UDP, ICMP, ANY).
+4. <code>DirectionCondition</code>: Encapsulates expected <code>DirectionMatch</code> (INBOUND, OUTBOUND, ANY).</p>
+<p>Each derived class overrides <code>matches()</code> and <code>getDescription()</code>.</p>
+<h3 id="44-runtime-polymorphism-and-vtable-dispatch">4.4 Runtime Polymorphism and VTable Dispatch</h3>
+<p>When <code>FirewallEngine::processPacket()</code> executes, it traverses the rule list and invokes <code>FirewallRule::matches(pkt)</code>. Inside this method, <code>cond-&gt;matches(pkt)</code> dynamically dispatches through the compiler-generated virtual method table (<code>vtable</code>).</p>
+<div class="codehilite"><pre><span></span><code><span class="n">FirewallRule</span><span class="p">.</span><span class="n">conditions</span>
+<span class="w">   </span><span class="err">│</span>
+<span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">IPCondition</span><span class="o">*</span><span class="w"> </span><span class="o">--------&gt;</span><span class="w"> </span><span class="n">vtable</span><span class="o">:</span><span class="w"> </span><span class="n">IPCondition</span><span class="o">::</span><span class="n">matches</span><span class="p">()</span>
+<span class="w">   </span><span class="err">│</span><span class="w">                                      </span><span class="p">(</span><span class="n">Bitwise</span><span class="w"> </span><span class="n">CIDR</span><span class="w"> </span><span class="n">mask</span><span class="w"> </span><span class="n">comparison</span><span class="p">)</span>
+<span class="w">   </span><span class="err">│</span>
+<span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="n">PortCondition</span><span class="o">*</span><span class="w"> </span><span class="o">-------&gt;</span><span class="w"> </span><span class="n">vtable</span><span class="o">:</span><span class="w"> </span><span class="n">PortCondition</span><span class="o">::</span><span class="n">matches</span><span class="p">()</span>
+<span class="w">   </span><span class="err">│</span><span class="w">                                      </span><span class="p">(</span><span class="nf">Range</span><span class="w"> </span><span class="n">inclusion</span><span class="w"> </span><span class="n">comparison</span><span class="p">)</span>
+<span class="w">   </span><span class="err">│</span>
+<span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="n">ProtocolCondition</span><span class="o">*</span><span class="w"> </span><span class="o">---&gt;</span><span class="w"> </span><span class="n">vtable</span><span class="o">:</span><span class="w"> </span><span class="n">ProtocolCondition</span><span class="o">::</span><span class="n">matches</span><span class="p">()</span>
+<span class="w">                                          </span><span class="p">(</span><span class="n">Enumeration</span><span class="w"> </span><span class="n">equality</span><span class="w"> </span><span class="n">comparison</span><span class="p">)</span>
+</code></pre></div>
+
+<p><em>Pedagogical Significance:</em> This demonstrates pure Open/Closed architecture. If a security requirement demands filtering by TCP Flags (SYN, ACK, FIN) or payload size limits, a student simply writes a new class <code>TcpFlagCondition : public RuleCondition</code>. <strong>Zero existing lines in <code>FirewallRule</code>, <code>RuleManager</code>, or <code>FirewallEngine</code> require modification.</strong></p>
+<h3 id="45-move-semantics-and-single-ownership-via-smart-pointers">4.5 Move Semantics and Single Ownership via Smart Pointers</h3>
+<p>Modern C++ emphasizes strict ownership semantics. In <code>FirewallRule</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// include/FirewallRule.hpp</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FirewallRule</span><span class="w"> </span><span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">RuleCondition</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">conditions</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Move-only semantics: copy constructors are explicitly deleted</span>
+<span class="w">    </span><span class="n">FirewallRule</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FirewallRule</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">    </span><span class="n">FirewallRule</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FirewallRule</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Default move operations transfer ownership cleanly</span>
+<span class="w">    </span><span class="n">FirewallRule</span><span class="p">(</span><span class="n">FirewallRule</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="w">    </span><span class="n">FirewallRule</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">FirewallRule</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">};</span>
+</code></pre></div>
+
+<p><em>Why this design decision matters:</em>
+- <code>std::unique_ptr&lt;RuleCondition&gt;</code> guarantees that when a <code>FirewallRule</code> is destroyed or removed from <code>RuleManager</code>, all polymorphic conditions it owns are automatically deallocated without manual <code>delete</code> calls (RAII).
+- Explicitly deleting the copy constructor prevents shallow-copy bugs (where two rules mistakenly reference the same heap condition pointer) and eliminates expensive deep copies during <code>std::vector</code> reallocation.
+- Passing rules via <code>std::move</code> into <code>RuleManager::addRule(std::move(newRule))</code> transfers pointer ownership with zero heap reallocations.</p>
+<h3 id="46-association-dependency-injection-and-decoupling">4.6 Association, Dependency Injection, and Decoupling</h3>
+<p>The <code>FirewallEngine</code> class does not instantiate its own rules. Instead, it accepts an external <code>RuleManager</code> reference:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// include/FirewallEngine.hpp</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FirewallEngine</span><span class="w"> </span><span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="n">RuleManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ruleManager</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Decision</span><span class="w"> </span><span class="n">defaultPolicy</span><span class="p">{</span><span class="n">Decision</span><span class="o">::</span><span class="n">BLOCKED</span><span class="p">};</span>
+<span class="w">    </span><span class="n">AuditLogger</span><span class="w"> </span><span class="n">logger</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Statistics</span><span class="w"> </span><span class="n">statistics</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verboseTrace</span><span class="p">{</span><span class="nb">false</span><span class="p">};</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">FirewallEngine</span><span class="p">(</span><span class="n">RuleManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rm</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">};</span>
+</code></pre></div>
+
+<p><em>Architectural Rationale:</em>
+- <strong>Single Responsibility Principle (SRP):</strong> <code>FirewallEngine</code> is solely responsible for packet evaluation algorithms. <code>RuleManager</code> is solely responsible for rule indexing and sorting. <code>AuditLogger</code> is solely responsible for disk I/O.
+- <strong>Testability:</strong> In automated testing harnesses (<code>tests/test_engine.cpp</code>), an isolated <code>RuleManager</code> can be supplied to verify engine behavior without unexpected state bleed between tests.</p>
+<h3 id="47-standard-template-library-stl-integration">4.7 Standard Template Library (STL) Integration</h3>
+<p>The codebase leverages modern STL idioms:
+- <strong><code>std::stable_sort</code>:</strong> Used in <code>RuleManager::sortRules()</code>. Unlike <code>std::sort</code>, <code>std::stable_sort</code> preserves the relative order of rules having identical priorities, guaranteeing deterministic behavior across compiler versions:
+  <code>cpp
+  // src/RuleManager.cpp
+  void RuleManager::sortRules() {
+      std::stable_sort(rules.begin(), rules.end(),
+          [](const FirewallRule&amp; a, const FirewallRule&amp; b) {
+              return a.getPriority() &lt; b.getPriority();
+          });
+  }</code>
+- <strong><code>std::unordered_map</code>:</strong> Used in <code>Statistics</code> to maintain $O(1)$ rule hit lookups indexed by rule ID integer:
+  <code>cpp
+  std::unordered_map&lt;int, uint64_t&gt; ruleHitCounts;</code>
+- <strong><code>std::make_unique</code>:</strong> Used throughout condition factory methods to instantiate heap objects cleanly without raw <code>new</code> operators.</p>
+<hr />
+<h2 id="5-legitimate-design-patterns-demonstrated">5. Legitimate Design Patterns Demonstrated</h2>
+<p>To ensure academic honesty, design patterns are claimed <strong>only where the implementation genuinely reflects the formal GoF (Gang of Four) pattern structure</strong>:</p>
+<h3 id="51-composite-specification-pattern">5.1 Composite / Specification Pattern</h3>
+<ul>
+<li><strong>Component:</strong> <code>FirewallRule</code> composing multiple <code>RuleCondition</code> objects.</li>
+<li><strong>Justification:</strong> <code>FirewallRule</code> treats individual condition primitives (<code>IPCondition</code>, <code>PortCondition</code>) uniformly through the base interface. Evaluating <code>FirewallRule::matches()</code> represents a composite specification where the composite predicate passes if and only if all child specifications pass.</li>
+</ul>
+<h3 id="52-strategy-pattern">5.2 Strategy Pattern</h3>
+<ul>
+<li><strong>Component:</strong> <code>RuleCondition</code> hierarchy.</li>
+<li><strong>Justification:</strong> The family of condition algorithms (<code>IPCondition</code>, <code>PortCondition</code>, etc.) are encapsulated in separate classes and used interchangeably through the <code>RuleCondition</code> interface. The matching strategy varies dynamically depending on the configured rule criteria.</li>
+</ul>
+<h3 id="53-observer-tap-pattern-decoupled-auditing">5.3 Observer / Tap Pattern (Decoupled Auditing)</h3>
+<ul>
+<li><strong>Component:</strong> <code>AuditLogger</code> and <code>Statistics</code> observation within <code>FirewallEngine::processPacket()</code>.</li>
+<li><strong>Justification:</strong> The engine notifies telemetry and logging sinks upon packet decision and non-terminal <code>LOG</code> hits. The observation mechanism records diagnostic state without altering the decision logic.</li>
+</ul>
+<h3 id="54-facade-pattern">5.4 Facade Pattern</h3>
+<ul>
+<li><strong>Component:</strong> <code>FirewallEngine</code>.</li>
+<li><strong>Justification:</strong> <code>FirewallEngine</code> exposes a simple, unified interface (<code>processPacket(pkt)</code>) to client code (<code>main.cpp</code>, <code>SimulationRunner</code>), abstracting away the internal complexities of priority sorting, condition conjunction, non-terminal log tap processing, fallback policies, metric aggregation, and audit disk writing.</li>
+</ul>
+<hr />
+<h2 id="6-viva-defense-guide-key-oop-questions-and-answers">6. Viva Defense Guide: Key OOP Questions and Answers</h2>
+<h3 id="q1-why-did-you-use-stdunique_ptr-instead-of-raw-pointers-or-stdshared_ptr-for-rule-conditions">Q1: Why did you use <code>std::unique_ptr</code> instead of raw pointers or <code>std::shared_ptr</code> for rule conditions?</h3>
+<blockquote>
+<p><strong>Model Answer:</strong> <code>std::unique_ptr</code> expresses exclusive single ownership. A specific condition object belongs strictly to one firewall rule. Using raw pointers introduces the risk of memory leaks or dangling pointers if an exception occurs during rule assembly. <code>std::shared_ptr</code> introduces reference-counting atomic overhead that is completely unnecessary because conditions are never shared between unrelated rules.</p>
+</blockquote>
+<h3 id="q2-how-does-your-project-satisfy-the-openclosed-principle">Q2: How does your project satisfy the Open/Closed Principle?</h3>
+<blockquote>
+<p><strong>Model Answer:</strong> The system is open for extension but closed for modification. If we need to add a new filtering rule type (e.g., matching a domain name or packet payload size), we simply derive a new class from <code>RuleCondition</code> and implement <code>matches()</code>. The <code>FirewallRule</code> container and <code>FirewallEngine</code> evaluation loop operate purely on <code>RuleCondition</code> base pointers and do not need a single line of code changed.</p>
+</blockquote>
+<h3 id="q3-why-is-firewallrule-move-only-deleted-copy-constructor">Q3: Why is <code>FirewallRule</code> move-only (deleted copy constructor)?</h3>
+<blockquote>
+<p><strong>Model Answer:</strong> <code>FirewallRule</code> owns a vector of polymorphic <code>std::unique_ptr&lt;RuleCondition&gt;</code>. Because <code>std::unique_ptr</code> cannot be copied, a default copy constructor cannot exist. Furthermore, allowing shallow copies of rules would cause double-free bugs or unexpected state mutation. By deleting the copy constructor and providing an explicit move constructor, we enable efficient transfers of rules into vectors while guaranteeing strict single ownership.</p>
+</blockquote>
+<h3 id="q4-why-did-you-use-stdstable_sort-instead-of-stdsort-for-rule-ordering">Q4: Why did you use <code>std::stable_sort</code> instead of <code>std::sort</code> for rule ordering?</h3>
+<blockquote>
+<p><strong>Model Answer:</strong> <code>std::sort</code> does not guarantee the relative order of elements with equivalent keys. If two rules share the same priority, standard sort might arbitrarily reorder them across different runs or platforms. <code>std::stable_sort</code> preserves the exact original insertion order for rules with identical priorities, ensuring deterministic, reproducible security policy evaluation.</p>
+</blockquote>
+<h3 id="q5-how-is-runtime-polymorphism-used-during-packet-evaluation">Q5: How is runtime polymorphism used during packet evaluation?</h3>
+<blockquote>
+<p><strong>Model Answer:</strong> In <code>FirewallRule::matches()</code>, the loop calls <code>cond-&gt;matches(pkt)</code>. Because <code>cond</code> is a pointer to the abstract base class <code>RuleCondition</code>, the CPU uses the virtual method table (<code>vtable</code>) pointer at runtime to resolve and execute the overridden <code>matches()</code> method of the actual derived object (<code>IPCondition</code>, <code>PortCondition</code>, etc.).</p>
+</blockquote>
+<hr />
+<h2 id="7-conclusion">7. Conclusion</h2>
+<p>The <strong>Firewall Rule Engine</strong> architecture is a textbook demonstration of Modern C++17 object-oriented programming. By prioritizing encapsulation, interface abstraction, polymorphic predicates, RAII resource safety, and move semantics, the system achieves a clean separation of concerns, high maintainability, and exceptional educational clarity for college faculty evaluation.</p>
+</body>
+</html>

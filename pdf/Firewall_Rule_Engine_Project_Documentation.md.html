@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firewall Rule Engine - Comprehensive Technical Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@page {
+    size: A4 portrait;
+    margin: 18mm 16mm 18mm 16mm;
+    @bottom-center {
+        content: counter(page);
+        font-family: 'Inter', sans-serif;
+        font-size: 8.5pt;
+        color: #64748b;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 9.8pt;
+    line-height: 1.62;
+    color: #1e293b;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Document Header / Cover Banner */
+.doc-header {
+    border-bottom: 3px solid #1e3a8a;
+    background: linear-gradient(to right, #f8fafc, #ffffff);
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 28px;
+}
+
+.doc-badge {
+    display: inline-block;
+    background-color: #1e3a8a;
+    color: #ffffff;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.doc-header h1 {
+    font-size: 19pt;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    line-height: 1.25;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.doc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 8.5pt;
+    color: #475569;
+    margin-top: 12px;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 10px;
+}
+
+.doc-meta-item strong {
+    color: #0f172a;
+}
+
+/* Headings */
+h1 {
+    font-size: 14.5pt;
+    font-weight: 700;
+    color: #1e3a8a;
+    border-bottom: 1.5px solid #cbd5e1;
+    padding-bottom: 6px;
+    margin-top: 30px;
+    margin-bottom: 14px;
+    page-break-after: avoid;
+}
+
+.doc-header h1 {
+    page-break-after: auto;
+}
+
+h2 {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #1e40af;
+    margin-top: 22px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #334155;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+}
+
+h4, h5, h6 {
+    font-size: 9.8pt;
+    font-weight: 600;
+    color: #475569;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+}
+
+p {
+    margin: 0 0 10px 0;
+    text-align: justify;
+}
+
+ul, ol {
+    margin: 0 0 12px 0;
+    padding-left: 22px;
+}
+
+li {
+    margin-bottom: 4px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 22px 0;
+}
+
+/* Links */
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 20px 0;
+    font-size: 8.5pt;
+    line-height: 1.45;
+    page-break-inside: avoid;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+th, td {
+    padding: 7px 10px;
+    border: 1px solid #cbd5e1;
+    vertical-align: top;
+}
+
+th {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    letter-spacing: 0.2px;
+}
+
+tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+/* Code & Preformatted */
+code {
+    font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 8.5pt;
+    background-color: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+pre {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #1e3a8a;
+    border-radius: 4px;
+    padding: 11px 13px;
+    overflow-x: auto;
+    margin: 14px 0;
+    page-break-inside: avoid;
+}
+
+pre code {
+    font-size: 8pt;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    color: #0f172a;
+    line-height: 1.5;
+}
+
+/* Blockquotes / Callout Alerts */
+blockquote {
+    border-left: 4px solid #3b82f6;
+    background-color: #eff6ff;
+    color: #1e40af;
+    margin: 14px 0;
+    padding: 10px 16px;
+    border-radius: 0 6px 6px 0;
+    font-size: 9pt;
+    page-break-inside: avoid;
+}
+
+blockquote p {
+    margin: 0;
+    color: #1e3a8a;
+}
+
+/* Mermaid Diagrams Container */
+.mermaid-wrapper {
+    margin: 22px 0;
+    text-align: center;
+    page-break-inside: avoid;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.mermaid-wrapper svg {
+    max-width: 100% !important;
+    height: auto !important;
+    display: inline-block;
+}
+
+.mermaid-caption {
+    font-size: 8pt;
+    color: #64748b;
+    font-style: italic;
+    margin-top: 10px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 6px;
+}
+
+/* Print Utilities */
+@media print {
+    body {
+        font-size: 9.5pt;
+    }
+    .page-break {
+        page-break-before: always;
+    }
+    .no-break {
+        page-break-inside: avoid;
+    }
+}
+
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f8f8f8; }
+.codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #9C6500 } /* Comment.Preproc */
+.codehilite .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #E40000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #008400 } /* Generic.Inserted */
+.codehilite .go { color: #717171 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #687822 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #00F; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #800 } /* Name.Constant */
+.codehilite .nd { color: #A2F } /* Name.Decorator */
+.codehilite .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #00F } /* Name.Function */
+.codehilite .nl { color: #767600 } /* Name.Label */
+.codehilite .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #A45A77 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #00F } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666 } /* Literal.Number.Integer.Long */
+</style>
+<script>
+window.addEventListener('DOMContentLoaded', async () => {
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: 'neutral',
+        securityLevel: 'loose',
+        fontFamily: 'Inter, -apple-system, Segoe UI, sans-serif'
+    });
+    try {
+        await mermaid.run({
+            querySelector: '.mermaid'
+        });
+    } catch (e) {
+        console.error('Mermaid render error:', e);
+    }
+    const flag = document.createElement('div');
+    flag.id = 'render-complete';
+    flag.style.display = 'none';
+    document.body.appendChild(flag);
+});
+</script>
+</head>
+<body>
+<h1 id="firewall-rule-engine-a-modular-packet-filtering-security-system-in-c17">Firewall Rule Engine: A Modular Packet-Filtering Security System in C++17</h1>
+<h2 id="comprehensive-technical-project-documentation-and-academic-defense-guide">Comprehensive Technical Project Documentation and Academic Defense Guide</h2>
+<hr />
+<h2 id="document-control-metadata">Document Control &amp; Metadata</h2>
+<ul>
+<li><strong>Project Title:</strong> Firewall Rule Engine (C++17 OOP Simulator)</li>
+<li><strong>Academic Level:</strong> Second-Year Computer Engineering (Object-Oriented Programming Course Project)</li>
+<li><strong>Author:</strong> Student Engineering Team</li>
+<li><strong>Language Standard:</strong> ISO/IEC 14882:2017 (C++17)</li>
+<li><strong>Build System:</strong> CMake $\ge 3.12$ / GNU Compiler Collection (<code>g++</code> 16.1.0 UCRT64)</li>
+<li><strong>Verification Status:</strong> Fully Implemented, Compiled (0 Warnings, 0 Errors), Verified (15/15 Unit Tests Passed)</li>
+</ul>
+<hr />
+<h2 id="section-1-project-overview">Section 1: Project Overview</h2>
+<h3 id="11-project-title">1.1 Project Title</h3>
+<p><strong>Firewall Rule Engine: An Extensible Layer 3/Layer 4 Packet Inspection and Policy Enforcement Simulator in C++17</strong></p>
+<h3 id="12-abstract">1.2 Abstract</h3>
+<p>Network security relies on packet-filtering firewalls as the initial perimeter defense against unauthorized access, malicious probes, and network misuse. Traditional educational demonstrations of firewalls often reduce policy evaluation to trivial, hardcoded <code>if-else</code> branching, obscuring the underlying software architecture, policy ordering mechanics, and binary algorithms required for packet inspection. This project presents the <strong>Firewall Rule Engine</strong>, a local, offline packet-filtering simulator engineered in C++17. The engine evaluates synthetic IPv4 network packets against runtime-configurable security policies using the <strong>First Terminal Verdict Wins</strong> strategy with non-terminal audit logging taps. The design is structured around object-oriented principles: condition evaluation is abstracted through a polymorphic interface (<code>RuleCondition</code>), rule actions are decoupled into terminal and non-terminal execution strategies (<code>ActionType</code>), and multi-attribute policies are assembled via object composition (<code>FirewallRule</code>). Features include bitwise Classless Inter-Domain Routing (CIDR) subnet matching, port range checks, protocol/direction filters, transactional configuration loading with rollback protection, real-time telemetry counters, and structured audit trail export (CSV and plain text). The system provides a self-contained testbed suitable for demonstrating networking, systems programming, and modern C++ object-oriented design.</p>
+<h3 id="13-introduction-and-motivation">1.3 Introduction and Motivation</h3>
+<p>In modern networked systems, intermediate routers and boundary firewalls must process millions of packets per second while enforcing strict security guarantees. While production tools such as Linux Netfilter (<code>iptables</code>/<code>nftables</code>) or OpenBSD Packet Filter (<code>pf</code>) provide kernel-level enforcement, their internals are inaccessible to student engineers without kernel programming expertise and administrative system privileges. Conversely, textbook classroom examples frequently rely on static procedural code that fails to model real-world concepts such as rule priorities, default-deny fallbacks, CIDR prefix masking, and non-terminal logging taps.</p>
+<p>The motivation of this project is to construct an architecturally sound, educational, and technically defensible Layer 3/Layer 4 firewall simulator that bridges the gap between networking theory and software design. By modeling packets, conditions, rules, actions, and audit loggers as distinct interacting objects, the project illustrates how complex domain logic can be encapsulated within clean C++17 abstractions.</p>
+<h3 id="14-problem-statement">1.4 Problem Statement</h3>
+<p>Introductory networking and software engineering curricula lack a transparent, dependency-free reference implementation that:
+1. Demonstrates the mechanics of <strong>stateless packet filtering</strong> using pure user-space software.
+2. Explains the resolution of <strong>conflicting security rules</strong> through deterministic priority ordering.
+3. Implements <strong>CIDR subnet masking</strong> using bitwise arithmetic rather than string comparisons.
+4. Models non-terminal actions (such as logging taps) alongside terminal actions (<code>ALLOW</code>, <code>BLOCK</code>, <code>REJECT</code>) without corrupting the evaluation outcome.
+5. Provides <strong>transactional persistence</strong> ensuring that malformed rule definitions do not compromise active in-memory security policies.</p>
+<h3 id="15-project-objectives">1.5 Project Objectives</h3>
+<p>The core objectives of the Firewall Rule Engine are:
+- <strong>Modular Object-Oriented Design:</strong> Implement an extensible class hierarchy leveraging encapsulation, abstraction, inheritance, runtime polymorphism, and composition.
+- <strong>Header Inspection Capabilities:</strong> Support packet evaluation based on Source/Destination IPv4 addresses, CIDR subnets (<code>/0</code> through <code>/32</code>), transport ports and port ranges (<code>[minPort, maxPort]</code>), protocols (<code>TCP</code>, <code>UDP</code>, <code>ICMP</code>), and transmission directions (<code>INBOUND</code>, <code>OUTBOUND</code>).
+- <strong>Deterministic Policy Pipeline:</strong> Implement the <em>First Terminal Verdict Wins</em> evaluation strategy with an explicit, configurable <em>Default-Deny</em> fallback.
+- <strong>Non-Terminal Audit Logging:</strong> Implement <code>LOG</code> rules as audit taps that record metadata while permitting inspection to proceed to subsequent terminal rules.
+- <strong>Transactional Persistence:</strong> Design a line-oriented configuration parser with atomic reload guarantees (malformed lines trigger a rollback, preserving existing active rules).
+- <strong>Comprehensive Verification:</strong> Deliver a suite of deterministic unit tests and demonstration scenarios covering boundary conditions, rule inversions, and high-volume batch evaluations.</p>
+<h3 id="16-scope-and-explicit-limitations">1.6 Scope and Explicit Limitations</h3>
+<ul>
+<li><strong>Educational Offline Simulator:</strong> The engine operates strictly in user space on synthetic network packets created in memory or loaded from files.</li>
+<li><strong>No Kernel Hooks / No Privilege Escalation:</strong> The project does not capture physical network interfaces, require administrative privileges, open raw sockets (<code>SOCK_RAW</code>), or modify operating system routing/firewall tables.</li>
+<li><strong>Stateless Inspection:</strong> Packets are inspected independently. Connection state tracking (e.g., TCP 3-way handshake tracking, <code>ESTABLISHED</code>/<code>RELATED</code> states) is outside the primary implementation scope.</li>
+<li><strong>IPv4 Focus:</strong> Matching logic is built for 32-bit IPv4 addresses and CIDR prefixes; IPv6 is excluded from the initial version.</li>
+</ul>
+<h3 id="17-target-users-and-practical-relevance">1.7 Target Users and Practical Relevance</h3>
+<ul>
+<li><strong>Computer Engineering Students:</strong> Learn how network protocols, subnetting, and packet headers translate into object-oriented data structures and algorithms.</li>
+<li><strong>Instructors and Evaluators:</strong> A clean, dependency-free testbed for assessing C++17 design patterns, memory ownership (<code>std::unique_ptr</code>, move semantics), and automated testing.</li>
+<li><strong>Security Trainees:</strong> Experiment with rule ordering, shadowing, and default-deny policies without risk of locking themselves out of a live operating system.</li>
+</ul>
+<h3 id="18-technologies-and-development-tools">1.8 Technologies and Development Tools</h3>
+<ul>
+<li><strong>Programming Language:</strong> C++17 (utilizing standard library <code>&lt;cstdint&gt;</code>, <code>&lt;vector&gt;</code>, <code>&lt;string&gt;</code>, <code>&lt;memory&gt;</code>, <code>&lt;algorithm&gt;</code>, <code>&lt;chrono&gt;</code>, <code>&lt;fstream&gt;</code>).</li>
+<li><strong>Compiler:</strong> MinGW-w64 GCC 16.1.0 (MSYS2 UCRT64 environment) with <code>-std=c++17 -Wall -Wextra -Wpedantic -O2</code>.</li>
+<li><strong>Build System:</strong> CMake $\ge 3.12$ and Windows Command Scripts (<code>build.bat</code>) / POSIX Shell Scripts (<code>build.sh</code>).</li>
+<li><strong>Testing:</strong> Custom test harness with explicit pass/fail assertions.</li>
+</ul>
+<hr />
+<h2 id="section-2-research-background-and-related-work">Section 2: Research Background and Related Work</h2>
+<h3 id="21-packet-filtering-and-stateless-inspection">2.1 Packet Filtering and Stateless Inspection</h3>
+<p>Packet filtering represents the earliest and most fundamental architectural paradigm in network security, formally conceptualized by Mogul et al. [1]. Stateless packet filters operate at Layer 3 (Internet Layer) and Layer 4 (Transport Layer) of the TCP/IP reference model. Every datagram traversing a network boundary is inspected against an access control list (ACL) based exclusively on static header fields:
+- <strong>IPv4 Addresses:</strong> 32-bit identifiers assigned to network interfaces (RFC 791) [2].
+- <strong>Transport Protocols:</strong> Transmission Control Protocol (TCP, RFC 793) [3], User Datagram Protocol (UDP, RFC 768) [4], and Internet Control Message Protocol (ICMP, RFC 792) [5].
+- <strong>Transport Ports:</strong> 16-bit endpoint demarcators distinguishing services and host sockets.
+- <strong>Directionality:</strong> Classification of traffic as entering (<code>INBOUND</code>) or exiting (<code>OUTBOUND</code>) an interface.</p>
+<p>Stateless firewalls make independent, memoryless decisions for each packet, providing low latency and predictable computational bounds [6].</p>
+<h3 id="22-classless-inter-domain-routing-cidr">2.2 Classless Inter-Domain Routing (CIDR)</h3>
+<p>Before 1993, IPv4 address spaces were partitioned into rigid classes (Class A, B, and C). RFC 4632 codified Classless Inter-Domain Routing (CIDR) to prevent IPv4 routing table exhaustion and facilitate arbitrary prefix-length subnet allocation [7]. A CIDR block is designated as <code>A.B.C.D/n</code>, where $n \in [0, 32]$ defines the number of leading contiguous bits representing the network prefix.</p>
+<p>Mathematically, a packet with IPv4 address $IP_{pkt}$ falls within network prefix $IP_{net}$ under subnet mask $M_n$ if and only if:
+$$(IP_{pkt} \land M_n) = (IP_{net} \land M_n)$$
+where $\land$ denotes the bitwise AND operator, and:
+$$M_n = \begin{cases} 0x00000000, &amp; n = 0 \ \sim 0\text{u} \ll (32 - n), &amp; 1 \le n \le 32 \end{cases}$$</p>
+<h3 id="23-rule-priorities-shadowing-and-default-deny-policies">2.3 Rule Priorities, Shadowing, and Default-Deny Policies</h3>
+<p>Real-world firewall policy sets comprise dozens to thousands of rules. Because multiple rules may overlap in their matching criteria, packet filters must enforce an unambiguous ordering semantic. In Linux Netfilter and Cisco ACL architectures, <strong>First-Match-Wins</strong> evaluation is universally adopted [8, 9]:
+1. Rules are assigned descending priority (evaluated from lowest numerical index to highest).
+2. The packet is tested sequentially against each rule.
+3. The first rule whose matching predicates evaluate to <code>true</code> dictates the action.
+4. If no explicit rule matches, the system invokes the <strong>Default Policy</strong>.</p>
+<p>The principle of least privilege in cybersecurity dictates that the default policy must be <strong>Default-Deny</strong> (<code>BLOCK</code> or <code>DROP</code>), ensuring that unclassified traffic is discarded [10]. Rule conflicts (such as <strong>rule shadowing</strong>, where a broad preceding rule prevents a specific subsequent rule from ever matching) highlight the importance of explicit priority management.</p>
+<h3 id="24-terminal-verdicts-vs-non-terminal-audit-taps">2.4 Terminal Verdicts vs. Non-Terminal Audit Taps</h3>
+<p>In enterprise packet filtering, rules perform different operational roles:
+- <strong>Terminal Dispositions:</strong> Actions such as <code>ALLOW</code> (permit passage), <code>BLOCK</code> (silently discard), and <code>REJECT</code> (discard and notify sender) terminate the inspection lifecycle for that datagram.
+- <strong>Non-Terminal Actions:</strong> Logging actions (<code>LOG</code>) inspect headers, update metrics, or write audit records to persistent storage, but <strong>must not</strong> unilaterally terminate the evaluation or declare a final packet verdict [8].</p>
+<hr />
+<h2 id="section-3-research-educational-design-gap">Section 3: Research &amp; Educational Design Gap</h2>
+<h3 id="31-distinguishing-types-of-gaps">3.1 Distinguishing Types of Gaps</h3>
+<p>When evaluating academic projects, it is essential to distinguish between different categories of gaps:
+1. <strong>Research Gap in Literature:</strong> An unresolved scientific or algorithmic question unaddressed by peer-reviewed research (e.g., optimal hardware ternary content-addressable memory (TCAM) search algorithms for 400 Gbps backbones).
+2. <strong>Practical Engineering Limitation:</strong> A trade-off in production systems (e.g., kernel-space vs. user-space context switching overhead, or lock contention in multithreaded packet capture).
+3. <strong>Educational Design Gap:</strong> A deficiency in instructional tooling where reference implementations are either too trivial to model real systems or too complex for pedagogical analysis.</p>
+<h3 id="32-the-educational-design-gap-addressed">3.2 The Educational Design Gap Addressed</h3>
+<p>This project specifically addresses an <strong>Educational Design Gap</strong>. Introductory programming and networking curricula suffer from a dichotomy:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Introductory Classroom Projects]              [Production Systems (iptables, pf)]</span>
+<span class="w">  </span><span class="na">- Hardcoded if-else chains                     - C kernel modules</span>
+<span class="w">  </span><span class="na">- Fixed rules compiled into code               - Deep OS integration / requires root</span>
+<span class="w">  </span><span class="na">- No CIDR masking (string comparison)          - Inaccessible to 2nd-year students</span>
+<span class="w">  </span><span class="na">- Ambiguous rule ordering                      - Complex build and runtime toolchains</span>
+<span class="w">                     </span><span class="na">\                                /</span>
+<span class="w">                      </span><span class="na">▼                              ▼</span>
+<span class="w">                 </span><span class="k">[EDUCATIONAL GAP: No Modular, Clean OOP Simulator]</span>
+</code></pre></div>
+
+<p>Specifically, typical student firewall implementations exhibit:
+- <strong>Hardcoded Logic:</strong> Static conditionals that cannot be extended without recompiling the program.
+- <strong>Conflation of Actions and Decisions:</strong> Treating a <code>LOG</code> action as an <code>ALLOW</code> or <code>BLOCK</code> verdict, corrupting telemetry.
+- <strong>Naive Subnet Handling:</strong> Performing substring matching on IP strings (e.g., checking if an IP starts with <code>"192.168."</code>), failing on arbitrary CIDR boundaries like <code>/22</code> or <code>/27</code>.
+- <strong>Lack of Transactional Persistence:</strong> Modifying active rules line-by-line while parsing a configuration file, leaving the firewall in an inconsistent, insecure state if a syntax error occurs mid-file.</p>
+<hr />
+<h2 id="section-4-proposed-solution-and-gap-mapping">Section 4: Proposed Solution and Gap Mapping</h2>
+<p>The Firewall Rule Engine addresses these gaps through deliberate design decisions:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Identified Educational/Engineering Need</th>
+<th style="text-align: left;">Proposed Design Solution</th>
+<th style="text-align: left;">Implemented C++ Component</th>
+<th style="text-align: left;">Expected Benefit</th>
+<th style="text-align: left;">Verification Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>G1: Inflexible, Hardcoded Rule Conditionals</strong></td>
+<td style="text-align: left;">Abstract Condition Interface (<code>RuleCondition</code>) with polymorphic subclasses.</td>
+<td style="text-align: left;"><strong><code>RuleCondition.hpp</code></strong><br><strong><code>RuleCondition.cpp</code></strong></td>
+<td style="text-align: left;">Enables arbitrary combinations of conditions (<code>AND</code> logic) dynamically at runtime.</td>
+<td style="text-align: left;">Unit tests <code>TC-IP-01</code>, <code>TC-PORT-01</code>, <code>TC-ICMP-01</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>G2: Naive / Inaccurate Subnet Matching</strong></td>
+<td style="text-align: left;">Binary bitmask arithmetic using 32-bit host integers and safe prefix shifting.</td>
+<td style="text-align: left;"><code>IPCondition::matches()</code><br><code>IPCondition::calculateMask()</code></td>
+<td style="text-align: left;">Exact, boundary-accurate CIDR filtering matching RFC 4632.</td>
+<td style="text-align: left;">Unit tests <code>TC-CIDR-01</code> (<code>/0</code>), <code>TC-CIDR-02</code> (<code>/32</code>), and Scenario D.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>G3: Ambiguous Rule Priority &amp; Conflicts</strong></td>
+<td style="text-align: left;">Single source-of-truth priority sorting using <code>std::stable_sort</code>.</td>
+<td style="text-align: left;"><code>RuleManager::sortRules()</code><br><code>RuleManager::modifyRulePriority()</code></td>
+<td style="text-align: left;">Predictable, deterministic First-Match-Wins evaluation.</td>
+<td style="text-align: left;">Scenario C (Dynamic priority mutation and live re-evaluation).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>G4: Conflation of LOG and Final Verdicts</strong></td>
+<td style="text-align: left;">Decoupled <code>ActionType</code> (rule target) and <code>Decision</code> (packet fate).</td>
+<td style="text-align: left;"><code>FirewallEngine::processPacket()</code><br><code>AuditLogger::logNonTerminalTap()</code></td>
+<td style="text-align: left;"><code>LOG</code> rules record audit taps without halting traversal; terminal rules deliver verdicts.</td>
+<td style="text-align: left;">Scenario E and Unit test <code>TC-LOG-01</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>G5: Insecure / Fragile Configuration Loading</strong></td>
+<td style="text-align: left;">Transactional (all-or-nothing) file deserialization with rollback.</td>
+<td style="text-align: left;"><code>ConfigurationManager::loadConfiguration()</code></td>
+<td style="text-align: left;">Syntax or validation errors reject the file and leave active rules intact.</td>
+<td style="text-align: left;">Scenario F and Unit test <code>TC-CONF-01</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>G6: Lack of Verifiable Operational Tracing</strong></td>
+<td style="text-align: left;">Dual disk export (plain-text forensics log and structured RFC 4180 CSV).</td>
+<td style="text-align: left;"><strong><code>AuditLogger.cpp</code></strong><br><strong><code>Statistics.cpp</code></strong></td>
+<td style="text-align: left;">Complete transparency for every packet decision, rule hit count, and byte tally.</td>
+<td style="text-align: left;">Physical file verification (<code>firewall_audit.log</code> &amp; <code>firewall_decisions.csv</code>).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="section-5-project-methodology-engineering-phases">Section 5: Project Methodology &amp; Engineering Phases</h2>
+<p>The project followed an 11-phase development lifecycle:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Phase 1: Requirements] ──► [Phase 2: Domain Modeling] ──► [Phase 3: OOP Abstraction]</span>
+<span class="w">                                                                     </span><span class="na">│</span>
+<span class="k">[Phase 6: Engine Pipeline] ◄── [Phase 5: Rule Composite] ◄── [Phase 4: Bitwise CIDR]</span>
+<span class="w">       </span><span class="na">│</span>
+<span class="w">       </span><span class="na">▼</span>
+<span class="k">[Phase 7: Persistence] ──► [Phase 8: Telemetry] ──► [Phase 9: Testing] ──► [Phase 10 &amp; 11: Demo]</span>
+</code></pre></div>
+
+<h3 id="detailed-phase-breakdown">Detailed Phase Breakdown</h3>
+<h4 id="phase-1-requirements-analysis">Phase 1: Requirements Analysis</h4>
+<ul>
+<li><strong>Purpose:</strong> Establish functional boundaries, header fields, and supported actions.</li>
+<li><strong>Inputs:</strong> Networking RFCs (791, 793, 768, 792) and course project guidelines.</li>
+<li><strong>Outputs:</strong> Functional and Non-Functional Requirement specifications.</li>
+<li><strong>Completion Criteria:</strong> Clear definitions of <code>Packet</code>, <code>ActionType</code>, and <code>Decision</code>.</li>
+</ul>
+<h4 id="phase-2-domain-and-data-structure-modeling">Phase 2: Domain and Data Structure Modeling</h4>
+<ul>
+<li><strong>Purpose:</strong> Model IPv4 addresses and network packets as strongly typed data structures.</li>
+<li><strong>Inputs:</strong> C++17 fixed-width integer types (<code>&lt;cstdint&gt;</code>).</li>
+<li><strong>Outputs:</strong> <strong><code>Packet.hpp</code></strong> and <strong><code>Packet.cpp</code></strong>.</li>
+<li><strong>Validation:</strong> Strict string parsing rejecting non-numeric tokens and octets $&gt;255$.</li>
+</ul>
+<h4 id="phase-3-object-oriented-condition-action-hierarchy">Phase 3: Object-Oriented Condition &amp; Action Hierarchy</h4>
+<ul>
+<li><strong>Purpose:</strong> Design abstract interfaces for filtering predicates and execution strategies.</li>
+<li><strong>Activities:</strong> Declare <code>RuleCondition</code> and concrete subclasses (<code>IPCondition</code>, <code>PortCondition</code>, <code>ProtocolCondition</code>, <code>DirectionCondition</code>).</li>
+<li><strong>Outputs:</strong> <strong><code>RuleCondition.hpp</code></strong> and <strong><code>RuleCondition.cpp</code></strong>.</li>
+</ul>
+<h4 id="phase-4-bitwise-cidr-matching-implementation">Phase 4: Bitwise CIDR Matching Implementation</h4>
+<ul>
+<li><strong>Purpose:</strong> Implement constant-time binary subnet evaluation.</li>
+<li><strong>Logic:</strong> <code>(packetIP &amp; subnetMask) == (networkIP &amp; subnetMask)</code>. Handle <code>/0</code> and <code>/32</code> edge cases without undefined 64-bit shifting.</li>
+<li><strong>Validation:</strong> Verification via isolated unit tests.</li>
+</ul>
+<h4 id="phase-5-composite-rule-construction-ownership">Phase 5: Composite Rule Construction &amp; Ownership</h4>
+<ul>
+<li><strong>Purpose:</strong> Encapsulate conditions and actions into a move-only <code>FirewallRule</code>.</li>
+<li><strong>Activities:</strong> Implement move constructors/assignments; delete copy operators to enforce strict ownership of polymorphic <code>std::unique_ptr&lt;RuleCondition&gt;</code> collections.</li>
+<li><strong>Outputs:</strong> <strong><code>FirewallRule.hpp</code></strong> and <strong><code>FirewallRule.cpp</code></strong>.</li>
+</ul>
+<h4 id="phase-6-rule-management-engine-pipeline">Phase 6: Rule Management &amp; Engine Pipeline</h4>
+<ul>
+<li><strong>Purpose:</strong> Coordinate rule prioritization and packet inspection.</li>
+<li><strong>Activities:</strong> Build <code>RuleManager</code> with priority sorting (<code>std::stable_sort</code>) and <code>FirewallEngine</code> with first-terminal-verdict traversal.</li>
+<li><strong>Outputs:</strong> <strong><code>RuleManager.cpp</code></strong> and <strong><code>FirewallEngine.cpp</code></strong>.</li>
+</ul>
+<h4 id="phase-7-configuration-serialization-deserialization">Phase 7: Configuration Serialization &amp; Deserialization</h4>
+<ul>
+<li><strong>Purpose:</strong> Enable file persistence with transactional failure semantics.</li>
+<li><strong>Activities:</strong> Construct line parser supporting <code>#</code> comments, quoted strings, and token verification.</li>
+<li><strong>Outputs:</strong> <strong><code>ConfigurationManager.hpp</code></strong> and <strong><code>ConfigurationManager.cpp</code></strong>.</li>
+</ul>
+<h4 id="phase-8-audit-logging-and-telemetry">Phase 8: Audit Logging and Telemetry</h4>
+<ul>
+<li><strong>Purpose:</strong> Implement forensic record-keeping and statistical aggregation.</li>
+<li><strong>Activities:</strong> Build <code>AuditLogger</code> (plain text and CSV) and <code>Statistics</code> counters.</li>
+<li><strong>Outputs:</strong> <strong><code>AuditLogger.cpp</code></strong> and <strong><code>Statistics.cpp</code></strong>.</li>
+</ul>
+<h4 id="phase-9-unit-testing-verification">Phase 9: Unit Testing &amp; Verification</h4>
+<ul>
+<li><strong>Purpose:</strong> Systematically validate components against edge cases.</li>
+<li><strong>Activities:</strong> Implement 15 automated test cases in <code>tests/test_engine.cpp</code>.</li>
+<li><strong>Validation:</strong> Achieve 100% pass rate.</li>
+</ul>
+<h4 id="phase-10-scenario-runner-automation">Phase 10: Scenario Runner Automation</h4>
+<ul>
+<li><strong>Purpose:</strong> Provide deterministic CLI demonstration presets (Scenarios A through G).</li>
+<li><strong>Outputs:</strong> <strong><code>SimulationRunner.cpp</code></strong>.</li>
+</ul>
+<h4 id="phase-11-interactive-cli-integration-system-build">Phase 11: Interactive CLI Integration &amp; System Build</h4>
+<ul>
+<li><strong>Purpose:</strong> Deliver a user-friendly console application and build pipeline.</li>
+<li><strong>Outputs:</strong> <strong><code>main.cpp</code></strong>, <code>build.bat</code>, <code>build.sh</code>, <code>CMakeLists.txt</code>.</li>
+</ul>
+<hr />
+<h2 id="section-6-system-architecture">Section 6: System Architecture</h2>
+<h3 id="61-high-level-architecture">6.1 High-Level Architecture</h3>
+<div class="mermaid-wrapper" id="mermaid-container-0"><pre class="mermaid" id="mermaid-0">
+graph TD
+    User([User / CLI Menu]) --&gt;|Commands / Input Packets| App[Application Layer: main.cpp]
+    App --&gt;|Manage Policies| RM[RuleManager Subsystem]
+    App --&gt;|Inspect Traffic| FE[FirewallEngine Subsystem]
+    App --&gt;|Demonstrate| SR[SimulationRunner Facade]
+    
+    FE --&gt;|Query Ordered Rules| RM
+    FE --&gt;|Inspect Headers| PKT[Packet Model]
+    RM --&gt;|Owns &amp; Orders| FR[FirewallRule Collections]
+    
+    FR --&gt;|Composite Matching| RC[RuleCondition Hierarchy]
+    RC --&gt; IPCond[IPCondition: CIDR / Bitmask]
+    RC --&gt; PortCond[PortCondition: Port Ranges]
+    RC --&gt; ProtoCond[ProtocolCondition: TCP/UDP/ICMP]
+    RC --&gt; DirCond[DirectionCondition: In/Out]
+    
+    FE --&gt;|Log Taps &amp; Decisions| AL[AuditLogger Subsystem]
+    FE --&gt;|Update Counters| STAT[Statistics Subsystem]
+    
+    AL --&gt;|Append| DiskLog[(firewall_audit.log)]
+    AL --&gt;|Append| DiskCSV[(firewall_decisions.csv)]
+    
+    CM[ConfigurationManager] --&gt;|Read / Write| DiskConf[(rules/sample_rules.conf)]
+    CM --&gt;|Atomic Reload| RM
+</pre><div class="mermaid-caption">System Architectural Diagram #1</div></div>
+
+<h3 id="62-uml-class-diagram">6.2 UML Class Diagram</h3>
+<div class="mermaid-wrapper" id="mermaid-container-1"><pre class="mermaid" id="mermaid-1">
+classDiagram
+    class Packet {
+        +uint64_t id
+        +uint32_t srcIP
+        +uint32_t dstIP
+        +uint16_t srcPort
+        +uint16_t dstPort
+        +Protocol protocol
+        +Direction direction
+        +uint32_t payloadSize
+        +double timestamp
+        +parseIPv4(string ipStr)$ uint32_t
+        +ipToString(uint32_t ip)$ string
+        +getProtocolString() string
+        +getDirectionString() string
+        +toString() string
+    }
+
+    class RuleCondition {
+        &lt;&lt;abstract&gt;&gt;
+        +matches(Packet pkt)* bool
+        +getDescription()* string
+        +virtual ~RuleCondition()
+    }
+
+    class IPCondition {
+        -uint32_t networkIP
+        -uint32_t subnetMask
+        -uint32_t prefix
+        -IPField targetField
+        +matches(Packet pkt) bool
+        +getDescription() string
+        +calculateMask(uint32_t pfx)$ uint32_t
+    }
+
+    class PortCondition {
+        -uint16_t minPort
+        -uint16_t maxPort
+        -PortField targetField
+        +matches(Packet pkt) bool
+        +getDescription() string
+    }
+
+    class ProtocolCondition {
+        -ProtocolMatch matchProto
+        +matches(Packet pkt) bool
+        +getDescription() string
+    }
+
+    class DirectionCondition {
+        -DirectionMatch matchDir
+        +matches(Packet pkt) bool
+        +getDescription() string
+    }
+
+    RuleCondition &lt;|-- IPCondition
+    RuleCondition &lt;|-- PortCondition
+    RuleCondition &lt;|-- ProtocolCondition
+    RuleCondition &lt;|-- DirectionCondition
+
+    class FirewallRule {
+        -int id
+        -int priority
+        -bool enabled
+        -string name
+        -ActionType actionType
+        -vector~unique_ptr~RuleCondition~~ conditions
+        +matches(Packet pkt) bool
+        +addCondition(unique_ptr~RuleCondition~ cond)
+        +getPriority() int
+        +setPriority(int newPriority)
+        +isEnabled() bool
+        +setEnabled(bool state)
+        +getActionType() ActionType
+        +getActionString() string
+        +getConditionsSummary() string
+    }
+
+    FirewallRule *-- RuleCondition : owns via unique_ptr (1..*)
+
+    class RuleManager {
+        -vector~FirewallRule~ rules
+        +addRule(FirewallRule rule) bool
+        +removeRule(int ruleId) bool
+        +modifyRulePriority(int ruleId, int newPriority) bool
+        +setRuleEnabled(int ruleId, bool enabled) bool
+        +findRuleById(int ruleId) FirewallRule*
+        +sortRules()
+        +replaceAll(vector~FirewallRule~ newRules)
+        +getRules() vector~FirewallRule~&amp;
+    }
+
+    RuleManager o-- FirewallRule : manages move-only collection
+
+    class FirewallEngine {
+        -RuleManager&amp; ruleManager
+        -Decision defaultPolicy
+        -AuditLogger logger
+        -Statistics statistics
+        -bool verboseTrace
+        +processPacket(Packet pkt) EvaluationResult
+        +setDefaultPolicy(Decision policy)
+        +getDefaultPolicy() Decision
+        +getStatistics() Statistics&amp;
+        +getLogger() AuditLogger&amp;
+    }
+
+    FirewallEngine --&gt; RuleManager : references
+    FirewallEngine --&gt; Packet : evaluates
+</pre><div class="mermaid-caption">System Architectural Diagram #2</div></div>
+
+<h3 id="63-packet-processing-flowchart">6.3 Packet-Processing Flowchart</h3>
+<div class="mermaid-wrapper" id="mermaid-container-2"><pre class="mermaid" id="mermaid-2">
+flowchart TD
+    Ingress([Packet Ingress]) --&gt; InitResult[Initialize EvaluationResult]
+    InitResult --&gt; SortCheck[Fetch Rules in Ascending Priority Order]
+    SortCheck --&gt; NextRule{Rules Remaining?}
+    
+    NextRule -- Yes --&gt; EnabledCheck{Rule is Enabled?}
+    EnabledCheck -- No --&gt; SkipRule[Advance to Next Rule] --&gt; NextRule
+    EnabledCheck -- Yes --&gt; EvaluateConds{All Conditions Match?&lt;br&gt;Logical AND}
+    EvaluateConds -- No --&gt; SkipRule
+    
+    EvaluateConds -- Yes (Match!) --&gt; ActionCheck{ActionType?}
+    
+    ActionCheck -- LOG --&gt; LogTap[Log Non-Terminal Audit Tap&lt;br&gt;Append Rule ID to LoggedList]
+    LogTap --&gt; SkipRule
+    
+    ActionCheck -- ALLOW --&gt; TermAllow[Set Verdict = ALLOWED&lt;br&gt;Set Reason &amp; Rule ID]
+    ActionCheck -- BLOCK --&gt; TermBlock[Set Verdict = BLOCKED&lt;br&gt;Set Reason &amp; Rule ID]
+    ActionCheck -- REJECT --&gt; TermReject[Set Verdict = REJECTED&lt;br&gt;Simulate ICMP Unreachable]
+    
+    NextRule -- No (Exhausted) --&gt; Fallback[Apply Default Fallback Policy&lt;br&gt;Default: BLOCKED]
+    
+    TermAllow --&gt; Finalize[Invoke AuditLogger &amp; Update Statistics]
+    TermBlock --&gt; Finalize
+    TermReject --&gt; Finalize
+    Fallback --&gt; Finalize
+    
+    Finalize --&gt; ReturnVerdict([Return EvaluationResult to Caller])
+</pre><div class="mermaid-caption">System Architectural Diagram #3</div></div>
+
+<h3 id="64-configuration-loading-and-transactional-rollback-flow">6.4 Configuration Loading and Transactional Rollback Flow</h3>
+<div class="mermaid-wrapper" id="mermaid-container-3"><pre class="mermaid" id="mermaid-3">
+sequenceDiagram
+    participant User as Caller / CLI
+    participant CM as ConfigurationManager
+    participant Disk as rules/sample_rules.conf
+    participant RM as RuleManager (Active Store)
+
+    User-&gt;&gt;CM: loadConfiguration(&quot;rules/sample_rules.conf&quot;, RM)
+    CM-&gt;&gt;CM: Create tempRules (vector&lt;FirewallRule&gt;)
+    CM-&gt;&gt;Disk: Open file stream
+    
+    loop Line-by-Line Tokenization
+        CM-&gt;&gt;CM: Parse RULE, COND, END_RULE tokens
+        alt Syntax / Validation Error Found (e.g. Octet &gt; 255)
+            CM-&gt;&gt;CM: Format errorMessage with Line Number
+            CM-&gt;&gt;Disk: Close stream
+            CM--&gt;&gt;User: return false (FAIL)
+            Note over CM,RM: RM active rules remain untouched (Rollback Guarantee)
+        else Valid Line
+            CM-&gt;&gt;CM: Assemble conditions &amp; push to tempRules
+        end
+    end
+
+    CM-&gt;&gt;RM: replaceAll(std::move(tempRules))
+    Note over RM: Rules replaced atomically and sorted by priority
+    CM--&gt;&gt;User: return true (SUCCESS)
+</pre><div class="mermaid-caption">System Architectural Diagram #4</div></div>
+
+<hr />
+<h2 id="section-7-object-oriented-programming-concepts-used">Section 7: Object-Oriented Programming Concepts Used</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">OOP Concept</th>
+<th style="text-align: left;">Actual Class / Component</th>
+<th style="text-align: left;">Concrete Application in Codebase</th>
+<th style="text-align: left;">Engineering &amp; Academic Justification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Encapsulation</strong></td>
+<td style="text-align: left;"><code>Packet</code>, <code>FirewallRule</code>, <code>Statistics</code></td>
+<td style="text-align: left;">Private member fields accessed strictly via public accessors (<code>getId()</code>, <code>getPriority()</code>, <code>isEnabled()</code>). State mutation guarded by domain logic.</td>
+<td style="text-align: left;">Prevents external corruption of packet headers, rule priority ordering, and statistical counters.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Abstraction</strong></td>
+<td style="text-align: left;"><code>RuleCondition</code></td>
+<td style="text-align: left;">Pure abstract base class exposing <code>virtual bool matches(const Packet&amp;) const = 0</code> and <code>virtual std::string getDescription() const = 0</code>.</td>
+<td style="text-align: left;">Decouples rule matching from specific network header evaluation mechanics.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Inheritance</strong></td>
+<td style="text-align: left;"><code>IPCondition</code>, <code>PortCondition</code>, <code>ProtocolCondition</code>, <code>DirectionCondition</code></td>
+<td style="text-align: left;">Subclasses inherit from <code>RuleCondition</code>, implementing concrete matching logic for specific header domains.</td>
+<td style="text-align: left;">Reusable code organization; allows new filtering criteria to be added seamlessly without touching core engine logic.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Runtime Polymorphism</strong></td>
+<td style="text-align: left;"><code>FirewallRule::matches()</code>, <code>RuleManager</code></td>
+<td style="text-align: left;">Invokes <code>cond-&gt;matches(pkt)</code> through <code>std::unique_ptr&lt;RuleCondition&gt;</code> pointers stored in a homogeneous vector.</td>
+<td style="text-align: left;">Dynamic dispatch selects appropriate matching algorithm (CIDR, port range, protocol) at runtime.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Object Composition</strong></td>
+<td style="text-align: left;"><code>FirewallRule</code></td>
+<td style="text-align: left;">A <code>FirewallRule</code> holds a <code>std::vector&lt;std::unique_ptr&lt;RuleCondition&gt;&gt;</code> and an <code>ActionType</code>.</td>
+<td style="text-align: left;">Implements multi-attribute filtering (IP <strong>AND</strong> Port <strong>AND</strong> Protocol) by assembling independent objects.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Ownership &amp; Move Semantics</strong></td>
+<td style="text-align: left;"><code>FirewallRule</code>, <code>RuleManager</code></td>
+<td style="text-align: left;">Copy constructors are explicitly deleted (<code>= delete</code>); move constructors (<code>= default</code>) and <code>std::move</code> transfer ownership.</td>
+<td style="text-align: left;">Guarantees single-ownership semantics for polymorphic pointers; eliminates expensive deep-copy operations during rule sorting.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Resource Acquisition Is Initialization (RAII)</strong></td>
+<td style="text-align: left;"><code>AuditLogger</code>, <code>ConfigurationManager</code></td>
+<td style="text-align: left;">File streams (<code>std::ofstream</code>, <code>std::ifstream</code>) are managed by object lifecycles; closed automatically upon destruction.</td>
+<td style="text-align: left;">Guarantees deterministic file flushing, prevents file handle leaks, and ensures safe exception handling.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Standard Template Library (STL)</strong></td>
+<td style="text-align: left;">Full Engine</td>
+<td style="text-align: left;"><code>std::vector</code> (dynamic rule arrays), <code>std::unordered_map</code> (rule hit tallying), <code>std::stable_sort</code> (order preservation), <code>std::stringstream</code> (parsing).</td>
+<td style="text-align: left;">Industry-standard, high-performance data structures and algorithms eliminating manual memory manipulation.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Design Patterns (Justified)</strong></td>
+<td style="text-align: left;"><code>FirewallEngine</code> (Pipeline), <code>SimulationRunner</code> (Facade)</td>
+<td style="text-align: left;"><code>SimulationRunner</code> provides a simplified facade over the engine and logger; <code>RuleCondition</code> serves as a strategy predicate.</td>
+<td style="text-align: left;">Avoids artificial design pattern bloat while structuring the evaluation pipeline cleanly.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="section-8-algorithms-and-technical-implementation">Section 8: Algorithms and Technical Implementation</h2>
+<h3 id="81-32-bit-ipv4-address-parsing-string-conversion">8.1 32-Bit IPv4 Address Parsing &amp; String Conversion</h3>
+<ul>
+<li><strong>Purpose:</strong> Converts human-readable dot-decimal IPv4 strings (e.g., <code>"192.168.1.50"</code>) into native 32-bit integers.</li>
+<li><strong>Source File:</strong> <strong><code>src/Packet.cpp</code></strong></li>
+<li><strong>Time Complexity:</strong> $\mathcal{O}(1)$ (bounded by maximum 15 input characters).</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">Packet::parseIPv4</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ipStr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">stringstream</span><span class="w"> </span><span class="n">ss</span><span class="p">(</span><span class="n">ipStr</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">segment</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parts</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">getline</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">,</span><span class="w"> </span><span class="sc">'.'</span><span class="p">))</span><span class="w"> </span><span class="n">parts</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">segment</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">parts</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">"Malformed IPv4: '"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ipStr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"'"</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">part</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parts</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">part</span><span class="p">.</span><span class="n">empty</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">part</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'0'</span><span class="p">))</span>
+<span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">"Invalid leading zero or empty octet: '"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ipStr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"'"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">part</span><span class="p">)</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="sc">'0'</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="sc">'9'</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">"Non-numeric octet: '"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ipStr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"'"</span><span class="p">);</span>
+
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">stoi</span><span class="p">(</span><span class="n">part</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">val</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span>
+<span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">"Octet out of range [0, 255]: '"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ipStr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"'"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">val</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="82-bitwise-cidr-subnet-matching-algorithm">8.2 Bitwise CIDR Subnet Matching Algorithm</h3>
+<ul>
+<li><strong>Purpose:</strong> Determines if an IP belongs to a CIDR network block in constant time without string operations.</li>
+<li><strong>Source File:</strong> <strong><code>src/RuleCondition.cpp</code></strong></li>
+<li><strong>Time Complexity:</strong> $\mathcal{O}(1)$ bitwise operations.</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">IPCondition::calculateMask</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">pfx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pfx</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">"CIDR prefix must be between 0 and 32"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pfx</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0u</span><span class="p">;</span><span class="w"> </span><span class="c1">// Special case: /0 matches every address</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mh">0xFFFFFFFFu</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">32u</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pfx</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="nf">IPCondition::matches</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Packet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pkt</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">targetIP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">targetField</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">IPField</span><span class="o">::</span><span class="n">SOURCE</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">pkt</span><span class="p">.</span><span class="n">srcIP</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">pkt</span><span class="p">.</span><span class="n">dstIP</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">targetIP</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">subnetMask</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">(</span><span class="n">networkIP</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">subnetMask</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="83-deterministic-rule-sorting-algorithm">8.3 Deterministic Rule Sorting Algorithm</h3>
+<ul>
+<li><strong>Purpose:</strong> Orders rules strictly by numerical priority.</li>
+<li><strong>Source File:</strong> <strong><code>src/RuleManager.cpp</code></strong></li>
+<li><strong>Time Complexity:</strong> $\mathcal{O}(N \log N)$ where $N$ is the number of active rules.</li>
+<li><strong>Algorithm:</strong> <code>std::stable_sort</code> preserves insertion order for rules with identical numerical priorities.</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RuleManager::sortRules</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">stable_sort</span><span class="p">(</span><span class="n">rules</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">rules</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">FirewallRule</span><span class="o">&amp;</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FirewallRule</span><span class="o">&amp;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">getPriority</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">getPriority</span><span class="p">();</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="84-evaluation-pipeline-first-terminal-verdict-wins">8.4 Evaluation Pipeline: First Terminal Verdict Wins</h3>
+<ul>
+<li><strong>Purpose:</strong> Evaluates packets against ordered rules, handling audit taps and default-deny fallback.</li>
+<li><strong>Source File:</strong> <strong><code>src/FirewallEngine.cpp</code></strong></li>
+<li><strong>Time Complexity:</strong> Worst-case $\mathcal{O}(N \times C)$ where $N$ is the rule count and $C$ is conditions per rule (typically $C \le 4$).</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="n">EvaluationResult</span><span class="w"> </span><span class="nf">FirewallEngine::processPacket</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Packet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pkt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">EvaluationResult</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="n">result</span><span class="p">.</span><span class="n">packetId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pkt</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+<span class="w">    </span><span class="n">result</span><span class="p">.</span><span class="n">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pkt</span><span class="p">.</span><span class="n">timestamp</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rule</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ruleManager</span><span class="p">.</span><span class="n">getRules</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rule</span><span class="p">.</span><span class="n">isEnabled</span><span class="p">())</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rule</span><span class="p">.</span><span class="n">matches</span><span class="p">(</span><span class="n">pkt</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rule</span><span class="p">.</span><span class="n">getActionType</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ActionType</span><span class="o">::</span><span class="n">LOG</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// Non-terminal audit tap: Record and continue traversal</span>
+<span class="w">                </span><span class="n">logger</span><span class="p">.</span><span class="n">logNonTerminalTap</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span><span class="w"> </span><span class="n">rule</span><span class="p">.</span><span class="n">getId</span><span class="p">(),</span><span class="w"> </span><span class="n">rule</span><span class="p">.</span><span class="n">getName</span><span class="p">());</span>
+<span class="w">                </span><span class="n">statistics</span><span class="p">.</span><span class="n">recordLogEvent</span><span class="p">(</span><span class="n">rule</span><span class="p">.</span><span class="n">getId</span><span class="p">());</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">loggedRuleIds</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">rule</span><span class="p">.</span><span class="n">getId</span><span class="p">());</span>
+<span class="w">                </span><span class="k">continue</span><span class="p">;</span><span class="w"> </span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rule</span><span class="p">.</span><span class="n">getActionType</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ActionType</span><span class="o">::</span><span class="n">ALLOW</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">finalDecision</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Decision</span><span class="o">::</span><span class="n">ALLOWED</span><span class="p">;</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">matchedRuleId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rule</span><span class="p">.</span><span class="n">getId</span><span class="p">();</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">matchedRuleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rule</span><span class="p">.</span><span class="n">getName</span><span class="p">();</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">reason</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Permitted by matching rule"</span><span class="p">;</span>
+<span class="w">                </span><span class="n">finalizeVerdict</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rule</span><span class="p">.</span><span class="n">getActionType</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ActionType</span><span class="o">::</span><span class="n">BLOCK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">finalDecision</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Decision</span><span class="o">::</span><span class="n">BLOCKED</span><span class="p">;</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">matchedRuleId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rule</span><span class="p">.</span><span class="n">getId</span><span class="p">();</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">matchedRuleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rule</span><span class="p">.</span><span class="n">getName</span><span class="p">();</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">reason</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Silently dropped by matching rule"</span><span class="p">;</span>
+<span class="w">                </span><span class="n">finalizeVerdict</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rule</span><span class="p">.</span><span class="n">getActionType</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ActionType</span><span class="o">::</span><span class="n">REJECT</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">finalDecision</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Decision</span><span class="o">::</span><span class="n">REJECTED</span><span class="p">;</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">matchedRuleId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rule</span><span class="p">.</span><span class="n">getId</span><span class="p">();</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">matchedRuleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rule</span><span class="p">.</span><span class="n">getName</span><span class="p">();</span>
+<span class="w">                </span><span class="n">result</span><span class="p">.</span><span class="n">reason</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Rejected with simulated ICMP Destination Port Unreachable"</span><span class="p">;</span>
+<span class="w">                </span><span class="n">finalizeVerdict</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Default Fallback Policy (Default-Deny)</span>
+<span class="w">    </span><span class="n">result</span><span class="p">.</span><span class="n">finalDecision</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">defaultPolicy</span><span class="p">;</span>
+<span class="w">    </span><span class="n">result</span><span class="p">.</span><span class="n">matchedRuleId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">result</span><span class="p">.</span><span class="n">matchedRuleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Default Policy"</span><span class="p">;</span>
+<span class="w">    </span><span class="n">result</span><span class="p">.</span><span class="n">reason</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">defaultPolicy</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Decision</span><span class="o">::</span><span class="n">ALLOWED</span><span class="p">)</span>
+<span class="w">                  </span><span class="o">?</span><span class="w"> </span><span class="s">"Permitted by system default policy"</span>
+<span class="w">                  </span><span class="o">:</span><span class="w"> </span><span class="s">"Discarded by system default-deny policy"</span><span class="p">;</span>
+<span class="w">    </span><span class="n">finalizeVerdict</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="section-9-testing-validation-and-genuine-test-results">Section 9: Testing, Validation, and Genuine Test Results</h2>
+<p>The engine was compiled and executed using the MinGW GCC 16.1.0 toolchain under MSYS2 UCRT64.</p>
+<h3 id="91-build-command-output">9.1 Build Command &amp; Output</h3>
+<div class="codehilite"><pre><span></span><code>.\build.bat
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>====================================================
+Building Firewall Rule Engine in C++17...
+====================================================
+BUILD SUCCESSFUL! 'firewall.exe' generated.
+
+Building Unit Test Suite 'test_engine.exe'...
+TEST SUITE COMPILED! 'test_engine.exe' generated.
+
+Run '.\firewall.exe' to launch interactive firewall.
+Run '.\test_engine.exe' to run the automated unit test suite.
+</code></pre></div>
+
+<h3 id="92-genuine-unit-test-execution-table">9.2 Genuine Unit Test Execution Table</h3>
+<p>The test suite was executed via <code>.\test_engine.exe</code>. All 15 tests passed with zero failures.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Test ID</th>
+<th style="text-align: left;">Component Under Test</th>
+<th style="text-align: left;">Test Input / Scenario Description</th>
+<th style="text-align: left;">Expected Outcome</th>
+<th style="text-align: left;">Actual Result (Observed)</th>
+<th style="text-align: left;">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>TC-IP-01</code></td>
+<td style="text-align: left;">IPv4 Parsing &amp; Exact Match</td>
+<td style="text-align: left;"><code>192.168.1.1</code> evaluated against packet with source <code>192.168.1.1</code></td>
+<td style="text-align: left;">Condition returns <code>true</code></td>
+<td style="text-align: left;"><code>matches(p) == true</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-IP-02</code></td>
+<td style="text-align: left;">IPv4 Mismatch Detection</td>
+<td style="text-align: left;"><code>192.168.1.1</code> evaluated against packet with source <code>192.168.1.2</code></td>
+<td style="text-align: left;">Condition returns <code>false</code></td>
+<td style="text-align: left;"><code>matches(p) == false</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-IP-03</code></td>
+<td style="text-align: left;">Octet Range Validation</td>
+<td style="text-align: left;">String <code>"192.168.1.300"</code> passed to parser</td>
+<td style="text-align: left;">Throws <code>std::invalid_argument</code></td>
+<td style="text-align: left;">Exception caught with descriptive error</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-CIDR-01</code></td>
+<td style="text-align: left;">CIDR <code>/0</code> Prefix Boundary</td>
+<td style="text-align: left;"><code>0.0.0.0/0</code> evaluated against arbitrary IP addresses</td>
+<td style="text-align: left;">Matches all $2^{32}$ addresses</td>
+<td style="text-align: left;"><code>matches(p1) &amp;&amp; matches(p2) == true</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-CIDR-02</code></td>
+<td style="text-align: left;">CIDR <code>/32</code> Single Host Match</td>
+<td style="text-align: left;">Subnet <code>10.0.0.1/32</code> tested against <code>10.0.0.1</code> and <code>10.0.0.2</code></td>
+<td style="text-align: left;">Matches <code>10.0.0.1</code> only</td>
+<td style="text-align: left;">Match on host, false on neighbor</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-CIDR-03</code></td>
+<td style="text-align: left;">CIDR Prefix Boundary Check</td>
+<td style="text-align: left;">Prefix value <code>33</code> passed to mask calculator</td>
+<td style="text-align: left;">Throws <code>std::invalid_argument</code></td>
+<td style="text-align: left;">Exception caught: prefix out of range</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-PORT-01</code></td>
+<td style="text-align: left;">Port Range Inclusion</td>
+<td style="text-align: left;">Destination port range <code>[80, 443]</code> tested against 80, 443, 8080</td>
+<td style="text-align: left;">Matches 80 &amp; 443; rejects 8080</td>
+<td style="text-align: left;">Exact boundary matching verified</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-PORT-02</code></td>
+<td style="text-align: left;">Port Range Inversion</td>
+<td style="text-align: left;">Port condition initialized with <code>minPort=8080</code>, <code>maxPort=80</code></td>
+<td style="text-align: left;">Throws <code>std::invalid_argument</code></td>
+<td style="text-align: left;">Exception caught: <code>minPort &gt; maxPort</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-ICMP-01</code></td>
+<td style="text-align: left;">Protocol Semantic Policy</td>
+<td style="text-align: left;">PortCondition evaluated against ICMP packet</td>
+<td style="text-align: left;">Returns <code>false</code></td>
+<td style="text-align: left;">ICMP ignores transport port condition</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-RULE-01</code></td>
+<td style="text-align: left;">Priority Ordering Conflict</td>
+<td style="text-align: left;">Priority 10 (ALLOW 443) vs Priority 20 (BLOCK All TCP)</td>
+<td style="text-align: left;">Final Decision: <code>ALLOWED</code></td>
+<td style="text-align: left;"><code>res.finalDecision == Decision::ALLOWED</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-RULE-02</code></td>
+<td style="text-align: left;">Priority Dynamic Mutation</td>
+<td style="text-align: left;">Mutate Rule 2 to Priority 5; re-sort registry</td>
+<td style="text-align: left;">Final Decision: <code>BLOCKED</code></td>
+<td style="text-align: left;"><code>res.finalDecision == Decision::BLOCKED</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-RULE-03</code></td>
+<td style="text-align: left;">Disabled Rule Bypass</td>
+<td style="text-align: left;">Priority 10 Rule disabled via <code>setEnabled(false)</code></td>
+<td style="text-align: left;">Engine skips Rule 1, matches Rule 2</td>
+<td style="text-align: left;"><code>res.finalDecision == Decision::BLOCKED</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-RULE-04</code></td>
+<td style="text-align: left;">Empty Condition Rejection</td>
+<td style="text-align: left;">Attempt to add a rule with zero conditions to <code>RuleManager</code></td>
+<td style="text-align: left;">Registration rejected (<code>false</code>)</td>
+<td style="text-align: left;">Error logged, rule not registered</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-LOG-01</code></td>
+<td style="text-align: left;">Non-Terminal Tap Execution</td>
+<td style="text-align: left;">Packet matches Rule 1 (<code>LOG</code>), then Rule 2 (<code>REJECT</code>)</td>
+<td style="text-align: left;">Tap logged; Final Decision: <code>REJECTED</code></td>
+<td style="text-align: left;">Tap recorded, traversal continued</td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TC-FALL-01</code></td>
+<td style="text-align: left;">Default-Deny Policy Fallback</td>
+<td style="text-align: left;">Packet with unclassified port 9999 against default-deny</td>
+<td style="text-align: left;">Final Decision: <code>BLOCKED</code></td>
+<td style="text-align: left;">Decision: <code>BLOCKED</code>, RuleID: <code>-1</code></td>
+<td style="text-align: left;"><strong>PASS</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="section-10-results-demonstrations-and-discussion">Section 10: Results, Demonstrations, and Discussion</h2>
+<h3 id="101-scenario-execution-results">10.1 Scenario Execution Results</h3>
+<p>The interactive demonstration suite was executed through <code>firewall.exe</code>.</p>
+<h4 id="scenario-c-overlapping-rules-and-priority-inversion">Scenario C: Overlapping Rules and Priority Inversion</h4>
+<div class="codehilite"><pre><span></span><code>========================================================================
+   SCENARIO C: RULE PRIORITY &amp; OVERLAPPING POLICIES
+========================================================================
+[Step 1] Loading Overlapping Rules:
+  - Rule #1 (Priority 10): ALLOW Host 192.168.1.50
+  - Rule #2 (Priority 20): BLOCK Subnet 192.168.1.0/24
+
+Evaluating Packet from 192.168.1.50 under Priority 10 vs 20:
+[2026-10-26 11:06:03] [ ALLOWED] Pkt #201 [TCP INBOUND] 192.168.1.50:49812 -&gt; 10.0.0.1:22 (768 B) | Rule: #1 (Allow Specific Host) | Reason: Permitted by matching rule
+  Packet # 201 [ TCP  INBOUND]    192.168.1.50:49812 -&gt;        10.0.0.1:   22 | Verdict:  ALLOWED (Rule # 1 - Allow Specific Host)
+
+[Step 2] Inverting Priorities (Block Subnet Priority 5, Allow Host Priority 10):
+[2026-10-26 11:06:03] [ BLOCKED] Pkt #201 [TCP INBOUND] 192.168.1.50:49812 -&gt; 10.0.0.1:22 (768 B) | Rule: #2 (Block Entire Subnet) | Reason: Silently dropped by matching rule
+  Packet # 201 [ TCP  INBOUND]    192.168.1.50:49812 -&gt;        10.0.0.1:   22 | Verdict:  BLOCKED (Rule # 2 - Block Entire Subnet)
+Observed Behavior: With higher priority, the Subnet Block rule matched first!
+</code></pre></div>
+
+<h4 id="scenario-e-non-terminal-audit-logging-execution-trace">Scenario E: Non-Terminal Audit Logging Execution Trace</h4>
+<div class="codehilite"><pre><span></span><code>========================================================================
+   SCENARIO E: AUDIT LOGGING (NON-TERMINAL LOG TAP FOLLOWED BY TERMINAL ACTION)
+========================================================================
+Injecting Telnet packet to verify Audit Tap + Terminal Action pipeline:
+[2026-10-26 11:06:03] [AUDIT-TAP ] Pkt #401 [TCP INBOUND] 192.168.1.100:48112 -&gt; 10.0.0.1:23 (64 B) | Triggered by Rule #1 (Audit Tap Telnet)
+[2026-10-26 11:06:03] [REJECTED] Pkt #401 [TCP INBOUND] 192.168.1.100:48112 -&gt; 10.0.0.1:23 (64 B) | Rule: #2 (Reject Telnet Port) | Reason: Rejected with simulated ICMP Destination Port Unreachable
+  Packet # 401 [ TCP  INBOUND]   192.168.1.100:48112 -&gt;        10.0.0.1:   23 | Verdict: REJECTED (Rule # 2 - Reject Telnet Port)
+Non-Terminal Log Taps Triggered: 1 (Rule ID: 1 )
+Final Packet Decision: REJECTED
+Notice: Log tap executed without prematurely halting the evaluation chain!
+</code></pre></div>
+
+<h4 id="scenario-f-transactional-persistence-rollback-verification">Scenario F: Transactional Persistence &amp; Rollback Verification</h4>
+<div class="codehilite"><pre><span></span><code>========================================================================
+   SCENARIO F: CONFIGURATION PERSISTENCE &amp; TRANSACTIONAL ROLLBACK
+========================================================================
+[Step 1] Loading Valid Configuration ('rules/sample_rules.conf')...
+SUCCESS: Loaded 6 policies into memory.
+
+[Step 2] Testing Transactional Rollback on Malformed Configuration...
+Loading Invalid File Result: Rejected (Expected)
+Reported Error: Condition Validation Error at line 2: Octet out of range [0, 255] in IPv4: '192.168.1.300'
+Rule Count Before: 6 | Rule Count After: 6
+Result: Active rules preserved intact. Transaction rollback verified!
+</code></pre></div>
+
+<h3 id="102-empirical-batch-benchmark-performance">10.2 Empirical Batch Benchmark Performance</h3>
+<p>A synthetic benchmark of 50,000 packets was executed on an AMD/Intel x86_64 host (MSYS2 UCRT64 GCC 16.1.0, <code>-O2</code> optimization) evaluating across 6 active multi-attribute rules:
+- <strong>Packets Evaluated:</strong> 50,000 packets
+- <strong>Measured Elapsed Time:</strong> 0.0252 seconds
+- <strong>Observed Throughput:</strong> <strong>1,982,396 packets/second</strong> (~1.98 million evaluations/sec)
+- <strong>Verdict Distribution:</strong>
+  - Allowed: 24,924 (49.85%)
+  - Blocked: 12,441 (24.88%)
+  - Rejected: 12,635 (25.27%)
+  - Non-Terminal Log Taps: 12,635 events recorded</p>
+<hr />
+<h2 id="section-11-limitations-and-future-scope">Section 11: Limitations and Future Scope</h2>
+<h3 id="111-documented-limitations">11.1 Documented Limitations</h3>
+<ol>
+<li><strong>Stateless Scope:</strong> The current engine does not maintain dynamic connection state tables (e.g., tracking TCP SYN $\rightarrow$ SYN-ACK $\rightarrow$ ACK handshakes). Return traffic for established outbound sessions must be explicitly permitted via reverse rules.</li>
+<li><strong>Layer 3 / Layer 4 Boundaries:</strong> The engine inspects IP and Transport headers only; payload inspection (Deep Packet Inspection / DPI) and TLS SNI certificate inspection are not supported.</li>
+<li><strong>Linear Rule Traversal:</strong> Rule evaluation is $\mathcal{O}(N)$. While highly performant for hundreds of rules ($&gt;1.9\text{M pkts/sec}$), enterprise systems with $&gt;50,000$ rules typically require geometric interval trees or hardware-assisted TCAM tables.</li>
+</ol>
+<h3 id="112-future-roadmap-extensions">11.2 Future Roadmap &amp; Extensions</h3>
+<ul>
+<li><strong>Stateful Connection Tracking (<code>conntrack</code>):</strong> Implement a hash map tracking bidirectional flow 4-tuples (<code>SrcIP, DstIP, SrcPort, DstPort, Proto</code>) with state timeouts.</li>
+<li><strong>IPv6 Dual-Stack Support:</strong> Extend <code>IPCondition</code> to handle 128-bit IPv6 addresses and <code>/64</code> or <code>/48</code> prefix lengths.</li>
+<li><strong>Token-Bucket Rate Limiting:</strong> Implement rate-limiting conditions to drop packets from specific sources that exceed configurable packet-per-second thresholds.</li>
+<li><strong>Web-Based Visual Dashboard:</strong> Stream CSV audit telemetry to an embedded lightweight web GUI for real-time traffic monitoring.</li>
+</ul>
+<hr />
+<h2 id="section-12-conclusion">Section 12: Conclusion</h2>
+<p>The <strong>Firewall Rule Engine</strong> successfully demonstrates a modular, extensible, and technically sound packet-filtering architecture implemented in C++17. By decoupling condition predicates through the polymorphic <code>RuleCondition</code> interface, enforcing strict move-only object ownership in <code>FirewallRule</code>, and establishing an unambiguous <em>First Terminal Verdict Wins</em> policy pipeline, the project addresses common flaws found in introductory educational implementations.</p>
+<p>All functional requirements—including constant-time binary CIDR subnet masking, port range checks, non-terminal audit taps, default-deny fallbacks, and transactional file persistence—have been fully implemented, compiled with zero warnings under strict compiler flags, and validated across 15 automated unit tests and 7 demonstration scenarios. The project provides an academically defensible demonstration of modern C++ object-oriented engineering applied to cybersecurity.</p>
+<hr />
+<h2 id="section-13-references">Section 13: References</h2>
+<ol>
+<li>J. C. Mogul, R. F. Rashid, and M. J. Accetta, "The Packet Filter: An Efficient Mechanism for User-Level Network Code," in <em>Proc. Eleventh ACM Symposium on Operating Systems Principles (SOSP '87)</em>, 1987, pp. 39–51.</li>
+<li>Information Sciences Institute, "Internet Protocol - DARPA Internet Program Protocol Specification," RFC 791, Internet Engineering Task Force (IETF), Sep. 1981. [Online]. Available: https://www.rfc-editor.org/rfc/rfc791</li>
+<li>Information Sciences Institute, "Transmission Control Protocol - DARPA Internet Program Protocol Specification," RFC 793, IETF, Sep. 1981. [Online]. Available: https://www.rfc-editor.org/rfc/rfc793</li>
+<li>J. Postel, "User Datagram Protocol," RFC 768, IETF, Aug. 1980. [Online]. Available: https://www.rfc-editor.org/rfc/rfc768</li>
+<li>J. Postel, "Internet Control Message Protocol," RFC 792, IETF, Sep. 1981. [Online]. Available: https://www.rfc-editor.org/rfc/rfc792</li>
+<li>W. R. Cheswick, S. M. Bellovin, and A. D. Rubin, <em>Firewalls and Internet Security: Repelling the Wily Hacker</em>, 2nd ed. Boston, MA, USA: Addison-Wesley, 2003.</li>
+<li>V. Fuller and T. Li, "Classless Inter-domain Routing (CIDR): The Internet Address Assignment and Aggregation Plan," RFC 4632, IETF, Aug. 2006. [Online]. Available: https://www.rfc-editor.org/rfc/rfc4632</li>
+<li>Netfilter Core Team, "Netfilter and nftables Documentation," netfilter.org, 2024. [Online]. Available: https://www.netfilter.org/documentation/</li>
+<li>Cisco Systems, "Configuring IP Access Lists," Cisco IOS Security Configuration Guide, 2023. [Online]. Available: https://www.cisco.com/c/en/us/support/docs/security/ios-firewall/23602-confaccesslists.html</li>
+<li>J. H. Saltzer and M. D. Schroeder, "The protection of information in computer systems," <em>Proceedings of the IEEE</em>, vol. 63, no. 9, pp. 1278–1308, Sep. 1975.</li>
+<li>International Organization for Standardization, "Programming languages — C++," ISO/IEC 14882:2017, ISO, Dec. 2017. [Online]. Available: https://www.iso.org/standard/68564.html</li>
+</ol>
+</body>
+</html>
