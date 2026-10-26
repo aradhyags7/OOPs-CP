@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 class ConfigurationManager {
 public:
     static bool loadConfiguration(const std::string& filePath,

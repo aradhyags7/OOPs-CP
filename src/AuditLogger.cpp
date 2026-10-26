@@ -1,6 +1,8 @@
 #include "AuditLogger.hpp"
 #include <ctime>
 
+using namespace std;
+
 AuditLogger::~AuditLogger() {
     close();
 }

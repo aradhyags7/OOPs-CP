@@ -9,6 +9,8 @@
 #include <iomanip>
 #include <chrono>
 
+using namespace std;
+
 class AuditLogger {
 private:
     std::ofstream logFile;

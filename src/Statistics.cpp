@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <filesystem>
 
+using namespace std;
+
 void Statistics::recordDecision(Decision dec, int ruleId, uint32_t bytes) {
     packetsProcessed++;
     totalBytesProcessed += bytes;

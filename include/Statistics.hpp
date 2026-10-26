@@ -5,6 +5,8 @@
 #include <string>
 #include <unordered_map>
 
+using namespace std;
+
 enum class Decision {
     ALLOWED,
     BLOCKED,
