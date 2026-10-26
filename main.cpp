@@ -6,6 +6,8 @@
 #include <limits>
 #include <string>
 
+using namespace std;
+
 void displayMenu() {
     std::cout << "\n========================================================================\n";
     std::cout << "                 FIREWALL RULE ENGINE - C++17 OOP                       \n";

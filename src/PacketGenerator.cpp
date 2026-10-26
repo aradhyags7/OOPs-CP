@@ -1,6 +1,8 @@
 #include "PacketGenerator.hpp"
 #include <random>
 
+using namespace std;
+
 Packet PacketGenerator::createHTTPS(uint64_t id, const std::string& srcIP, const std::string& dstIP, Direction dir) {
     return Packet(id, Packet::parseIPv4(srcIP), Packet::parseIPv4(dstIP), 51234, 443,
                   Protocol::TCP, dir, 1200, 0.0);

@@ -8,6 +8,8 @@
 #include <cassert>
 #include <string>
 
+using namespace std;
+
 int testsPassed = 0;
 int testsTotal = 0;
 

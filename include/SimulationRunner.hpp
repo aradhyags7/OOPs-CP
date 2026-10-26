@@ -5,6 +5,8 @@
 #include <string>
 #include <cstddef>
 
+using namespace std;
+
 class SimulationRunner {
 private:
     FirewallEngine& engine;

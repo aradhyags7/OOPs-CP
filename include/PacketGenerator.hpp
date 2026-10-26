@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+using namespace std;
+
 class PacketGenerator {
 public:
     static Packet createHTTPS(uint64_t id, const std::string& srcIP, const std::string& dstIP,

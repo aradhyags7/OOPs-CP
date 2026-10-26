@@ -1,5 +1,7 @@
 #include "FirewallEngine.hpp"
 
+using namespace std;
+
 FirewallEngine::FirewallEngine(RuleManager& rm)
     : ruleManager(rm) {
     logger.initialize("firewall_audit.log", "firewall_decisions.csv");

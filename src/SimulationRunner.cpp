@@ -6,6 +6,8 @@
 #include <iostream>
 #include <memory>
 
+using namespace std;
+
 void SimulationRunner::printHeader(const std::string& title) {
     std::cout << "\n========================================================================\n";
     std::cout << "   " << title << "\n";
