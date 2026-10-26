@@ -1,6 +1,8 @@
 #include "FirewallRule.hpp"
 #include <stdexcept>
 
+using namespace std;
+
 FirewallRule::FirewallRule(int rId, int rPriority, bool isEnabled, std::string rName, ActionType action)
     : id(rId), priority(rPriority), enabled(isEnabled), name(std::move(rName)), actionType(action) {
     if (name.empty()) {

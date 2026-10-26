@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+using namespace std;
+
 enum class ActionType {
     ALLOW,
     BLOCK,

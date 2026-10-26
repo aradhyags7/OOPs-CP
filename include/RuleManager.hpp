@@ -4,6 +4,8 @@
 #include "FirewallRule.hpp"
 #include <vector>
 
+using namespace std;
+
 class RuleManager {
 private:
     std::vector<FirewallRule> rules;

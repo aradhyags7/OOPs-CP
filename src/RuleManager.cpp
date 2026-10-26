@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <iostream>
 
+using namespace std;
+
 bool RuleManager::addRule(FirewallRule rule) {
     if (findRuleById(rule.getId()) != nullptr) {
         std::cerr << "[RuleManager Error] Rule with ID " << rule.getId() << " already exists.\n";
